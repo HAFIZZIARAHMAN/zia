@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SPA Example</title>
+  <style>
+    nav a { margin: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" data-link>Home</a>
+    <a href="/chat" data-link>Chat</a>
+    <a href="/settings" data-link>Settings</a>
+  </nav>
+
+  <div id="app"></div>
+
+  <script>
+    const routes = {
+      "/": "<h1>Welcome Home</h1>",
+      "/chat": "<h1>Chat Screen</h1><p>Yahan chat hoga</p>",
+      "/settings": "<h1>Settings</h1><p>Options yahan</p>",
+    };
+
+    function render(pathname) {
+      document.getElementById("app").innerHTML =
+        routes[pathname] || "<h1>404 Not Found</h1>";
+    }
+
+    // Link click intercept
+    document.addEventListener("click", (e) => {
+      if (e.target.matches("[data-link]")) {
+        e.preventDefault();
+        const url = e.target.getAttribute("href");
+        history.pushState({}, "", url); // URL change karega bina reload
+        render(url);
+      }
+    });
+
+    // Back/Forward button
+    window.addEventListener("popstate", () => {
+      render(location.pathname);
+    });
+
+    // First load
+    render(location.pathname);
+  </script>
+</body>
+</html>
