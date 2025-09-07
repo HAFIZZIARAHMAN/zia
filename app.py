@@ -2,9 +2,15 @@ import os
 from flask import Flask, request, redirect, url_for, session, render_template
 from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey"
+
+
+DB_PATH = os.path.join(os.path.dirname(__file__), "data.db")
+conn = sqlite3.connect(DB_PATH)
+
 
 # ---------- DB Setup ----------
 def init_db():
