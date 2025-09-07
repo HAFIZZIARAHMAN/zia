@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xia-09</title>
+    <style>
+        .container{
+            background-color: brown;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+        }
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body style="background-color: antiquewhite;">
+
+    <div class="container">
+            <nav>
+                <input type="button" value="Home" style="font-size: 25px;text-decoration: brown;">
+                <input type="button" value="About Me" style="font-size: 25px; text-decoration: brown;">
+                <input type="button" value="Contact" style="font-size: 25px; text-decoration: brown;">
+            </nav>
+        
+    </div>
+
+
+    <div style="background-color:gold ;">
+        <p style="text-decoration: red; font-size: 40px; text-align: center;">Welcome To Xia-09's Corner</p>
+    </div> 
+    <p style="font-size: 30px; text-align: center;">Choose Any Game </p>
+    <div>
+        <img src="Perenoid.png" width="600px" >
+        <br>
+        <input type="button" onclick="myfunc()" value="Perenoid" style="font-size: 20px;">
+    </div>
+        
+    <script>
+        function myfunc() {
+            window.location.href = "perenoid.html"
+        }
+    </script>
+</body>
+</html>
