@@ -3,6 +3,11 @@ from flask import Flask, request, redirect, url_for, session, render_template
 from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
 import os
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "data.db")
+
+conn = sqlite3.connect(DB_PATH)
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey"
@@ -190,5 +195,6 @@ def logout():
 
 
 if __name__ == "__main__":
+    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
