@@ -4,6 +4,9 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
 import os
 import os
+from flask import Flask, request, jsonify, render_template_string
+import os
+from openai import OpenAI
     
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "data.db")
@@ -12,6 +15,12 @@ conn = sqlite3.connect(DB_PATH)
 
 app = Flask(__name__)
 app.secret_key = "mysecretkey"
+
+client = OpenAI(
+    base_url="https://router.huggingface.co/v1",
+    api_key=os.environ.get("HF_TOKEN")
+)
+MODEL_NAME = "deepseek-ai/DeepSeek-V3-0324:fireworks-ai"
 
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "data.db")
@@ -200,6 +209,64 @@ def perenoid():
 
 
     
+
+
+
+
+
+
+# 🔑 Hugging Face OpenAI-compatible API client
+
+
+
+# ---------------------- ROUTES ----------------------
+
+@app.route("/AI-home")
+def AI():
+    return render_template("ai.html")
+
+@app.route("/api-status")
+def api_status():
+    """Check if the Hugging Face API is online"""
+    try:
+        completion = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "user", "content": "ping"}],
+            max_tokens=5
+        )
+        return jsonify({"status": "online"})
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)})
+
+@app.route("/generate", methods=["POST"])
+def generate():
+    """Generate text using DeepSeek via Hugging Face router"""
+    try:
+        data = request.get_json(force=True) or {}
+        user_message = data.get("message", "").strip()
+
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
+
+        completion = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": user_message}
+            ],
+            max_tokens=500,
+            temperature=0.7
+        )
+
+        response_text = completion.choices[0].message.content
+
+        return jsonify({"response": response_text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ---------------------- RUN APP ----------------------
 if __name__ == "__main__":
+    
     port = int(os.environ.get("PORT", 5000))  # Get port from environment
     app.run(host="0.0.0.0", port=port, debug=True)

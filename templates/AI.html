@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zia's AI Chat</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #9ca3af;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 85vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+        }
+        
+        .user .message-content {
+            background: var(--primary);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        
+        .assistant .message-content {
+            background: white;
+            color: var(--dark);
+            border: 1px solid #e5e7eb;
+            border-top-left-radius: 4px;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        textarea {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            resize: none;
+            font-size: 16px;
+            min-height: 50px;
+            max-height: 150px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-style: italic;
+        }
+        
+        .loading-dots {
+            display: inline-flex;
+            margin-left: 8px;
+        }
+        
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gray);
+            margin: 0 2px;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .error {
+            color: var(--danger);
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            background: #f0f9ff;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: var(--secondary);
+        }
+        
+        .status-offline {
+            background: var(--danger);
+        }
+        
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .example {
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .example:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                height: auto;
+                min-height: 85vh;
+            }
+            
+            .input-area {
+                flex-direction: column;
+            }
+            
+            button {
+                margin: 12px 0 0 0;
+                width: 100%;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo"> Xia-09'S AI</div>
+            <h1>AI Assistant</h1>
+            <p class="subtitle">Powered by Zia Ur Rahman via Help of Chatgpt and DeepSeek</p>
+        </div>
+        
+        <div class="api-status">
+            <span class="status-indicator" id="statusIndicator"></span>
+            <span id="apiStatusText">Checking API status...</span>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-content">
+                        Hello! I'm your AI assistant powered by Zia Ur Rahman. How can I help you today?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <textarea 
+                    id="messageInput" 
+                    placeholder="Type your message here..." 
+                    rows="1"
+                    onkeydown="if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendMessage(); }"
+                ></textarea>
+                <button id="sendButton" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+        
+        <div class="examples">
+            <div class="example" onclick="setExample('Explain quantum computing in simple terms.')">
+                Explain quantum computing
+            </div>
+            <div class="example" onclick="setExample('How do I learn machine learning?')">
+                Learn machine learning
+            </div>
+            <div class="example" onclick="setExample('Write a Python function to calculate Fibonacci sequence.')">
+                Python Fibonacci
+            </div>
+            <div class="example" onclick="setExample('What are the latest advancements in AI?')">
+                AI advancements
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const port = 5000;
+
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const apiStatusText = document.getElementById('apiStatusText');
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        function setExample(text) {
+            messageInput.value = text;
+            messageInput.focus();
+            messageInput.dispatchEvent(new Event('input'));
+        }
+        
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message assistant';
+            loadingDiv.id = 'loadingMessage';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content loading';
+            contentDiv.innerHTML = 'Thinking<span class="loading-dots"><span></span><span></span><span></span></span>';
+            
+            loadingDiv.appendChild(contentDiv);
+            chatMessages.appendChild(loadingDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function hideLoading() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+        
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessage(message, true);
+            
+            // Clear input
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            // Disable send button
+            sendButton.disabled = true;
+            
+            // Show loading indicator
+            showLoading();
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        message: message
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Remove loading indicator
+                hideLoading();
+                
+                if (response.ok) {
+                    if (data.response) {
+                        addMessage(data.response);
+                    } else if (data.error) {
+                        addMessage(`Error: ${data.error}`);
+                    } else {
+                        addMessage('Sorry, I encountered an issue processing your request.');
+                    }
+                } else {
+                    addMessage(`Error: ${data.error || 'Unknown error occurred'}`);
+                }
+            } catch (error) {
+                hideLoading();
+                addMessage('Network error: Could not connect to the AI service.');
+            } finally {
+                // Re-enable send button
+                sendButton.disabled = false;
+            }
+        }
+        
+        // Check API status
+        async function checkApiStatus() {
+            try {
+                const response = await fetch('/api-status');
+                const data = await response.json();
+                
+                if (data.status === 'online') {
+                    statusIndicator.className = 'status-indicator status-online';
+                    apiStatusText.textContent = 'API Online';
+                } else {
+                    statusIndicator.className = 'status-indicator status-offline';
+                    apiStatusText.textContent = 'API Offline: ' + (data.error || 'Unknown error');
+                }
+            } catch (error) {
+                statusIndicator.className = 'status-indicator status-offline';
+                apiStatusText.textContent = 'Connection Error';
+            }
+        }
+        
+        // Initialize
+        checkApiStatus();
+        messageInput.focus();
+    </script>
+</body>
+</html>
