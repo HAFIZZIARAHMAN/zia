@@ -7,10 +7,19 @@ import os
 from flask import Flask, request, jsonify, render_template_string
 import os
 from openai import OpenAI
+import subprocess
+import sys
 
+# Function to install a package if it's missing
+def install_if_missing(package_name):
+    try:
+        __import__(package_name)
+    except ImportError:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
 
 # Ensure 'openai' is installed
 install_if_missing("openai")
+
 
 # Now you can safely import it
 from openai import OpenAI
