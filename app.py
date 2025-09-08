@@ -4,6 +4,7 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
 import os
 import os
+    
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "data.db")
 
@@ -200,7 +201,5 @@ def perenoid():
 
     
 if __name__ == "__main__":
-    app.run(debug=True)
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 5000))  # Get port from environment
+    app.run(host="0.0.0.0", port=port, debug=True)
