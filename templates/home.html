@@ -37,15 +37,11 @@
     </div> 
     <p style="font-size: 30px; text-align: center;">Choose Any Game </p>
     <div>
-        <img src="Perenoid.png" width="600px" >
+        <img src="{{ url_for('static', filename='Perenoid.png') }}" width="600px">
         <br>
-        <input type="button" onclick="myfunc()" value="Perenoid" style="font-size: 20px;">
+        <input type="button" onclick="window.location.href='/perenoid'" value="Perenoid" style="font-size: 20px;">
     </div>
         
-    <script>
-        function myfunc() {
-            window.location.href = "perenoid.html"
-        }
-    </script>
+   
 </body>
 </html>
