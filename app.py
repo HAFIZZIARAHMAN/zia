@@ -33,7 +33,7 @@ app.secret_key = "mysecretkey"
 
 client = OpenAI(
     base_url="https://router.huggingface.co/v1",
-    api_key=os.environ.get("HF_TOKEN")
+     api_key=os.environ.get("HF_TOKEN")
 )
 MODEL_NAME = "deepseek-ai/DeepSeek-V3-0324:fireworks-ai"
 
@@ -238,7 +238,7 @@ def perenoid():
 
 @app.route("/AI-home")
 def AI():
-    return render_template("ai.html")
+    return render_template("AI.html")
 
 @app.route("/api-status")
 def api_status():
