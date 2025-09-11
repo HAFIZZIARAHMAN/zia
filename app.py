@@ -320,6 +320,22 @@ def generate_code(length=5):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 # ---------- Routes ----------
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit, join_room
+import random, string
+
+
+app.config["SECRET_KEY"] = "mysecretkey"
+
+socketio = SocketIO(app)
+
+# Store active games
+games = {}
+
+def generate_code(length=5):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+# ---------- Routes ----------
 @app.route("/")
 def index():
     return render_template("index.html")   # Lobby (create/join)
@@ -327,6 +343,22 @@ def index():
 @app.route("/game")
 def game():
     return render_template("game.html")   # Board UI
+
+# ---------- Winner Check ----------
+def check_winner(board):
+    # All winning combinations (indices)
+    wins = [
+        [0,1,2], [3,4,5], [6,7,8],  # rows
+        [0,3,6], [1,4,7], [2,5,8],  # columns
+        [0,4,8], [2,4,6]            # diagonals
+    ]
+    for combo in wins:
+        a, b, c = combo
+        if board[a] != "" and board[a] == board[b] == board[c]:
+            return board[a]  # "X" or "O"
+    if "" not in board:
+        return "Tie"
+    return None  # Game still ongoing
 
 # ---------- Socket.IO Events ----------
 @socketio.on("create_game")
@@ -339,7 +371,6 @@ def create_game():
         "board": games[code]["board"],
         "turn": "X"
     })
-    # Tell creator explicitly they are waiting
     emit("waiting", {"message": "Waiting for another player..."})
 
 @socketio.on("join_game")
@@ -347,13 +378,11 @@ def join_game(data):
     code = data["code"].strip().upper()
     if code in games:
         join_room(code)
-        # Send to joining player
         emit("game_joined", {
             "code": code,
             "board": games[code]["board"],
             "turn": games[code]["turn"]
         })
-        # Notify everyone in room
         emit("start_game", {
             "message": "Both players connected!",
             "board": games[code]["board"],
@@ -373,14 +402,18 @@ def make_move(data):
     game = games[code]
     if game["board"][index] == "":
         game["board"][index] = game["turn"]
-        game["turn"] = "O" if game["turn"] == "X" else "X"
-        emit("move_made", {"board": game["board"], "turn": game["turn"]}, room=code)
+        winner = check_winner(game["board"])
+
+        if winner:
+            emit("game_over", {"board": game["board"], "winner": winner}, room=code)
+        else:
+            # Switch turn
+            game["turn"] = "O" if game["turn"] == "X" else "X"
+            emit("move_made", {"board": game["board"], "turn": game["turn"]}, room=code)
 
 # ---------- Run ----------
-# ---------------------- RUN APP ----------------------
-# ---------------------- RUN APP ----------------------
 if __name__ == "__main__":
     import eventlet
-    import eventlet.wsgi
     port = int(os.environ.get("PORT", 5000))
     socketio.run(app, host="0.0.0.0", port=port, debug=True)
+

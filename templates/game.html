@@ -1,86 +1,158 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Tic Tac Toe</title>
-  <style>
-    .board { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; margin-top: 20px; }
-    .cell { width: 100px; height: 100px; font-size: 2em; text-align: center; }
-  </style>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-</head>
-<body>
-  <h1>🎮 Tic Tac Toe</h1>
-  <p id="status">Welcome!</p>
+<style>
+#board {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  gap: 5px;
+  margin-top: 20px;
+}
 
-  <!-- Create game button -->
+#board .cell {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+</style>
+
+
+
+<h1>🎮 Tic Tac Toe</h1>
+<p id="status">Choose how you want to play:</p>
+
+<!-- Pre-game choice -->
+<div id="modeChoice">
+  <button onclick="startLocal()">1 Device (Local 2 Players)</button>
+  <button onclick="startOnline()">2 Devices (Online Multiplayer)</button>
+</div>
+
+<!-- Online join form -->
+<div id="onlineForm" style="display:none;">
   <button onclick="createGame()">Create New Game</button>
-
-  <!-- Join game form -->
   <form id="joinForm" onsubmit="joinGame(event)">
     <input id="joinCode" placeholder="Enter Game Code">
     <button type="submit">Join Game</button>
   </form>
+</div>
 
-  <!-- Game area -->
-  <div id="gameArea" style="display:none;">
-    <h3 id="gameCode"></h3>
-    <p id="turn">Turn: </p>
-    <div class="board" id="board"></div>
-  </div>
+<!-- Game board -->
+<div id="gameArea" style="display:none;">
+  <h3 id="gameCode"></h3>
+  <p id="turn"></p>
+  <div id="board"></div>
+</div>
 
-  <script>
-    const socket = io();
-    let gameCode = null;
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+let socket = io();
+let gameCode = null;
+let localMode = false;
+let turn = "X";
 
-    function createGame() {
-      socket.emit("create_game");
-      document.getElementById("status").innerText = "Creating game...";
-      document.getElementById("joinForm").style.display = "none";
-    }
+// Pre-game choice functions
+function startLocal() {
+  localMode = true;
+  document.getElementById("modeChoice").style.display = "none";
+  document.getElementById("gameArea").style.display = "block";
+  initLocalBoard();
+}
 
-    function joinGame(e) {
-      e.preventDefault();
-      const code = document.getElementById("joinCode").value.trim();
-      socket.emit("join_game", { code });
-    }
+function startOnline() {
+  localMode = false;
+  document.getElementById("modeChoice").style.display = "none";
+  document.getElementById("onlineForm").style.display = "block";
+}
 
-    function renderBoard(board, turn) {
-      const boardDiv = document.getElementById("board");
-      boardDiv.innerHTML = "";
-      board.forEach((cell, i) => {
-        const btn = document.createElement("button");
-        btn.classList.add("cell");
-        btn.innerText = cell || "-";
-        btn.disabled = cell !== "";
-        btn.onclick = () => socket.emit("make_move", { code: gameCode, index: i });
-        boardDiv.appendChild(btn);
-      });
-      document.getElementById("turn").innerText = "Turn: " + turn;
-    }
+// Local 2-player game
+function initLocalBoard() {
+  const board = ["", "", "", "", "", "", "", "", ""];
+  renderBoard(board, turn);
+}
 
-    socket.on("game_created", data => { 
-      gameCode = data.code; 
-      document.getElementById("gameArea").style.display = "block";
-      document.getElementById("gameCode").innerText = "Game Code: " + gameCode;
-      renderBoard(data.board, data.turn);
-    });
+// Render board (shared for local & online)
+function renderBoard(board, currentTurn) {
+  const boardDiv = document.getElementById("board");
+  boardDiv.innerHTML = "";
+  board.forEach((cell, i) => {
+    const btn = document.createElement("button");
+    btn.classList.add("cell");
+    btn.innerText = cell || "-";
+    btn.onclick = () => {
+      if (localMode) {
+        if (!cell) {
+          board[i] = turn;
+          const winner = checkWinner(board);
+          if (winner) {
+            alert(winner === "Tie" ? "It's a tie!" : winner + " wins!");
+            initLocalBoard();
+          } else {
+            turn = turn === "X" ? "O" : "X";
+            renderBoard(board, turn);
+          }
+        }
+      } else {
+        socket.emit("make_move", { code: gameCode, index: i });
+      }
+    };
+    boardDiv.appendChild(btn);
+  });
+  document.getElementById("turn").innerText = "Turn: " + (localMode ? turn : currentTurn);
+}
 
-    socket.on("waiting", data => {
-      document.getElementById("status").innerText = data.message;
-    });
+// Local winner check
+function checkWinner(board) {
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+  for (const [a,b,c] of wins) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+  }
+  return board.includes("") ? null : "Tie";
+}
 
-    socket.on("game_joined", data => {
-      gameCode = data.code;
-      document.getElementById("status").innerText = "Joined game " + data.code;
-      document.getElementById("joinForm").style.display = "none";
-      document.getElementById("gameArea").style.display = "block";
-      document.getElementById("gameCode").innerText = "Game Code: " + data.code;
-      renderBoard(data.board, data.turn);
-    });
+// --- Online Multiplayer ---
+function createGame() {
+  socket.emit("create_game");
+  document.getElementById("status").innerText = "Creating game...";
+  document.getElementById("joinForm").style.display = "none";
+}
 
-    socket.on("start_game", data => renderBoard(data.board, data.turn));
-    socket.on("move_made", data => renderBoard(data.board, data.turn));
-    socket.on("error", data => alert(data.message));
-  </script>
-</body>
-</html>
+function joinGame(e) {
+  e.preventDefault();
+  const code = document.getElementById("joinCode").value;
+  socket.emit("join_game", { code });
+}
+
+// Online socket events
+socket.on("game_created", data => {
+  gameCode = data.code;
+  document.getElementById("gameArea").style.display = "block";
+  document.getElementById("gameCode").innerText = "Game Code: " + data.code;
+});
+
+socket.on("waiting", data => {
+  document.getElementById("status").innerText = data.message;
+});
+
+socket.on("game_joined", data => {
+  gameCode = data.code;
+  document.getElementById("status").innerText = "Joined game " + data.code;
+  document.getElementById("onlineForm").style.display = "none";
+  document.getElementById("gameArea").style.display = "block";
+});
+
+socket.on("start_game", data => {
+  renderBoard(data.board, data.turn);
+});
+
+socket.on("move_made", data => renderBoard(data.board, data.turn));
+
+socket.on("game_over", data => {
+  renderBoard(data.board, data.turn);
+  alert(data.winner === "Tie" ? "It's a tie!" : data.winner + " wins!");
+});
+</script>
