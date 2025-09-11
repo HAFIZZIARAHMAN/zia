@@ -128,6 +128,11 @@
             color: white;
         }
 
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -262,6 +267,48 @@
             color: white;
         }
 
+        /* Win Popup */
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.3s ease;
+        }
+
+        .popup h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .popup p {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -282,6 +329,11 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         @keyframes x-move {
@@ -367,10 +419,13 @@
         <div id="modeChoice" class="section">
             <h2 class="section-title"><i class="fas fa-chess-board"></i> Choose Game Mode</h2>
             <div class="buttons">
-                <button class="btn btn-primary" onclick="startLocal()">
+                <button class="btn btn-primary" onclick="startSinglePlayer()">
+                    <i class="fas fa-user"></i> Single Player
+                </button>
+                <button class="btn btn-secondary" onclick="startLocal()">
                     <i class="fas fa-users"></i> 1 Device (Local 2 Players)
                 </button>
-                <button class="btn btn-secondary" onclick="startOnline()">
+                <button class="btn btn-accent" onclick="startOnline()">
                     <i class="fas fa-globe"></i> 2 Devices (Online Multiplayer)
                 </button>
             </div>
@@ -419,13 +474,27 @@
         <span>Connecting...</span>
     </div>
 
+    <!-- Win Popup -->
+    <div id="winPopup" class="popup hidden">
+        <div class="popup-content">
+            <h2><i class="fas fa-trophy"></i> Congratulations!</h2>
+            <p id="winMessage"></p>
+            <div class="popup-buttons">
+                <button class="btn btn-primary" onclick="resetGame()">Play Again</button>
+                <button class="btn btn-secondary" onclick="backToMenu()">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let socket = io();
         let gameCode = null;
-        let localMode = false;
+        let gameMode = null; // 'single', 'local', or 'online'
         let turn = "X";
         let gameActive = true;
         let boardState = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
+        let playerSymbol = "X"; // For single player mode
 
         // Connection status indicator
         socket.on('connect', () => {
@@ -444,30 +513,42 @@
         }
 
         // Pre-game choice functions
-        function startLocal() {
-            localMode = true;
+        function startSinglePlayer() {
+            gameMode = 'single';
+            playerSymbol = "X"; // Player is X, AI is O
             hideElement("modeChoice");
             showElement("gameArea");
-            initLocalBoard();
+            initGameBoard();
+            document.getElementById("status").textContent = "Single Player Mode";
+            document.getElementById("turn").textContent = "Your Turn (X)";
+        }
+
+        function startLocal() {
+            gameMode = 'local';
+            hideElement("modeChoice");
+            showElement("gameArea");
+            initGameBoard();
             document.getElementById("status").textContent = "Local Multiplayer Game";
             document.getElementById("turn").textContent = "Player X's Turn";
         }
 
         function startOnline() {
-            localMode = false;
+            gameMode = 'online';
             hideElement("modeChoice");
             showElement("onlineForm");
             document.getElementById("status").textContent = "Create or join an online game";
         }
 
-        // Local 2-player game
-        function initLocalBoard() {
+        // Initialize game board
+        function initGameBoard() {
             boardState = ["", "", "", "", "", "", "", "", ""];
             gameActive = true;
+            turn = "X";
+            currentPlayer = "X";
             renderBoard(boardState, turn);
         }
 
-        // Render board (shared for local & online)
+        // Render board
         function renderBoard(board, currentTurn) {
             const boardDiv = document.getElementById("board");
             boardDiv.innerHTML = "";
@@ -490,34 +571,103 @@
                 boardDiv.appendChild(cellDiv);
             });
             
-            document.getElementById("turn").textContent = `Player ${currentTurn}'s Turn`;
+            if (gameMode === 'single') {
+                document.getElementById("turn").textContent = currentTurn === playerSymbol ? "Your Turn (X)" : "AI's Turn (O)";
+            } else {
+                document.getElementById("turn").textContent = `Player ${currentTurn}'s Turn`;
+            }
         }
 
         function handleCellClick(index) {
             if (!gameActive || boardState[index] !== "") return;
             
-            if (localMode) {
+            if (gameMode === 'single') {
+                // Player's move
+                if (currentPlayer === playerSymbol) {
+                    boardState[index] = playerSymbol;
+                    const winner = checkWinner(boardState);
+                    
+                    if (winner) {
+                        gameActive = false;
+                        showWinPopup(winner);
+                    } else {
+                        currentPlayer = "O";
+                        renderBoard(boardState, currentPlayer);
+                        
+                        // AI's move after a short delay
+                        setTimeout(makeAIMove, 500);
+                    }
+                }
+            } else if (gameMode === 'local') {
                 boardState[index] = turn;
                 const winner = checkWinner(boardState);
                 
                 if (winner) {
                     gameActive = false;
-                    if (winner === "Tie") {
-                        document.getElementById("status").innerHTML = "<span class='winner'>It's a tie!</span>";
-                    } else {
-                        document.getElementById("status").innerHTML = `<span class='winner'>Player ${winner} wins!</span>`;
-                    }
+                    showWinPopup(winner);
                 } else {
                     turn = turn === "X" ? "O" : "X";
-                    document.getElementById("turn").textContent = `Player ${turn}'s Turn`;
+                    renderBoard(boardState, turn);
                 }
-                renderBoard(boardState, turn);
-            } else {
+            } else if (gameMode === 'online') {
                 socket.emit("make_move", { code: gameCode, index: index });
             }
         }
 
-        // Local winner check
+        // AI move for single player
+        function makeAIMove() {
+            if (!gameActive || currentPlayer !== "O") return;
+            
+            // Simple AI: try to win, block player, or make random move
+            let move = findWinningMove("O") || findWinningMove("X") || findRandomMove();
+            
+            if (move !== -1) {
+                boardState[move] = "O";
+                const winner = checkWinner(boardState);
+                
+                if (winner) {
+                    gameActive = false;
+                    showWinPopup(winner);
+                } else {
+                    currentPlayer = "X";
+                    renderBoard(boardState, currentPlayer);
+                }
+            }
+        }
+
+        function findWinningMove(symbol) {
+            // Check for winning moves
+            for (let i = 0; i < 9; i++) {
+                if (boardState[i] === "") {
+                    boardState[i] = symbol;
+                    if (checkWinner(boardState) === symbol) {
+                        boardState[i] = "";
+                        return i;
+                    }
+                    boardState[i] = "";
+                }
+            }
+            return null;
+        }
+
+        function findRandomMove() {
+            // Find all available moves
+            const availableMoves = [];
+            for (let i = 0; i < 9; i++) {
+                if (boardState[i] === "") {
+                    availableMoves.push(i);
+                }
+            }
+            
+            // Return a random available move
+            if (availableMoves.length > 0) {
+                return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+            }
+            
+            return -1; // No moves available
+        }
+
+        // Winner check
         function checkWinner(board) {
             const wins = [
                 [0,1,2],[3,4,5],[6,7,8],
@@ -532,6 +682,26 @@
             }
             
             return board.includes("") ? null : "Tie";
+        }
+
+        // Show win popup
+        function showWinPopup(winner) {
+            const popup = document.getElementById("winPopup");
+            const message = document.getElementById("winMessage");
+            
+            if (winner === "Tie") {
+                message.textContent = "It's a tie!";
+            } else if (gameMode === 'single') {
+                if (winner === playerSymbol) {
+                    message.textContent = `Congratulations {{ user }}! You won!`;
+                } else {
+                    message.textContent = "The AI won. Better luck next time!";
+                }
+            } else {
+                message.textContent = `Player ${winner} wins!`;
+            }
+            
+            popup.classList.remove("hidden");
         }
 
         // --- Online Multiplayer ---
@@ -586,9 +756,9 @@
             renderBoard(data.board, data.turn);
             
             if (data.winner === "Tie") {
-                document.getElementById("status").innerHTML = "<span class='winner'>It's a tie!</span>";
+                showWinPopup("Tie");
             } else {
-                document.getElementById("status").innerHTML = `<span class='winner'>Player ${data.winner} wins!</span>`;
+                showWinPopup(data.winner);
             }
         });
 
@@ -617,8 +787,13 @@
         }
 
         function resetGame() {
-            if (localMode) {
-                initLocalBoard();
+            hideElement("winPopup");
+            
+            if (gameMode === 'single') {
+                initGameBoard();
+                document.getElementById("status").textContent = "Single Player Mode";
+            } else if (gameMode === 'local') {
+                initGameBoard();
                 document.getElementById("status").textContent = "Local Multiplayer Game";
             } else if (gameCode) {
                 socket.emit("reset_game", { code: gameCode });
@@ -628,12 +803,15 @@
         function backToMenu() {
             hideElement("gameArea");
             hideElement("onlineForm");
+            hideElement("winPopup");
             showElement("modeChoice");
             
-            if (!localMode && gameCode) {
+            if (gameMode === 'online' && gameCode) {
                 socket.emit("leave_game", { code: gameCode });
                 gameCode = null;
             }
+            
+            gameMode = null;
         }
 
         // Initialize the page
