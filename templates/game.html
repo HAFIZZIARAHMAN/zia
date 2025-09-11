@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Toe</title>
+</head>
+<body>
+  <h1>🎮 Tic Tac Toe</h1>
+  <p id="status">Welcome!</p>
+
+  <!-- Create game button -->
+  <button onclick="createGame()">Create New Game</button>
+
+  <!-- Join game form -->
+  <form id="joinForm" onsubmit="joinGame(event)">
+    <input id="joinCode" placeholder="Enter Game Code">
+    <button type="submit">Join Game</button>
+  </form>
+
+  <!-- Game area -->
+  <div id="gameArea" style="display:none;">
+    <h3 id="gameCode"></h3>
+    <div id="board"></div>
+  </div>
+
+ 
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+
+  const socket = io();
+
+  function createGame() {
+    socket.emit("create_game");
+    document.getElementById("status").innerText = "Creating game...";
+    document.getElementById("joinForm").style.display = "none"; // hide join form
+  }
+
+  function joinGame(e) {
+    e.preventDefault();
+    const code = document.getElementById("joinCode").value;
+    socket.emit("join_game", { code: code });
+  }
+
+  // Player 1: game created
+  socket.on("game_created", (data) => {
+    document.getElementById("gameArea").style.display = "block";
+    document.getElementById("gameCode").innerText = "Game Code: " + data.code;
+  });
+
+  // Player 1: show waiting
+  socket.on("waiting", (data) => {
+    document.getElementById("status").innerText = data.message;
+  });
+
+  // Player 2: joined successfully
+  socket.on("game_joined", (data) => {
+    document.getElementById("status").innerText = "Joined game " + data.code + ". Waiting for other player...";
+    document.getElementById("joinForm").style.display = "none";
+    document.getElementById("gameArea").style.display = "block";
+    document.getElementById("gameCode").innerText = "Game Code: " + data.code;
+  });
+
+  // Both players: game starts
+  socket.on("start_game", (data) => {
+    document.getElementById("status").innerText = "Game started! Turn: " + data.turn;
+    // TODO: render the board here
+  });
+
+  // Errors (invalid code, etc.)
+  socket.on("error", (data) => {
+    alert(data.message);
+  });
+</script>
+
+</body>
+</html>

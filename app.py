@@ -7,8 +7,23 @@ import os
 from flask import Flask, request, jsonify, render_template_string
 import os
 from openai import OpenAI
+
 import subprocess
 import sys
+from flask_socketio import SocketIO, emit, join_room
+import random, string
+from flask import Flask
+from flask import Flask
+from flask_socketio import SocketIO, emit, join_room
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = "mysecretkey"
+
+socketio = SocketIO(app)
+
+
+
+
 
 # Function to install a package if it's missing
 def install_if_missing(package_name):
@@ -28,7 +43,6 @@ DB_PATH = os.path.join(BASE_DIR, "data.db")
 
 conn = sqlite3.connect(DB_PATH)
 
-app = Flask(__name__)
 app.secret_key = "mysecretkey"
 
 client = OpenAI(
@@ -44,7 +58,7 @@ conn = sqlite3.connect(DB_PATH)
 
 # ---------- DB Setup ----------
 def init_db():
-    conn = sqlite3.connect("data.db")
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -58,6 +72,12 @@ def init_db():
     conn.close()
 
 init_db()
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "data.db")
+
 
 # ---------- Routes ----------
 
@@ -76,7 +96,7 @@ def signin():
 
         if user:
             session["user"] = user[1]  # store name in session
-            return redirect(url_for("home.html"))
+            return redirect(url_for("/home"))
         else:
             return "<h3>Invalid login!</h3><p><a href='/'>Try again</a></p>"
 
@@ -104,13 +124,16 @@ def signup():
 
     return render_template("auth.html")
 
+
+
 # Dummy page after login
-@app.route("/dummy")
-def dummy_page():
+@app.route("/home")
+def home():
     if "user" in session:
-        return f"<h1>Welcome {session['user']} 🎉</h1><p>This is the dummy page.</p>"
+        return render_template("home.html", user=session["user"])
     else:
         return redirect(url_for("signin"))
+
 
 # ---------- Admin Panel ----------
 ADMIN_USER = "hiimzia"
@@ -278,10 +301,84 @@ def generate():
         return jsonify({"response": response_text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    # --- Multiplayer Tic Tac Toe ---
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit, join_room
+import random, string
 
 
+app.config["SECRET_KEY"] = "mysecretkey"
+
+# ✅ Initialize SocketIO
+socketio = SocketIO(app)
+
+# ✅ Store active games
+games = {}
+
+def generate_code(length=5):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+# ---------- Routes ----------
+@app.route("/")
+def index():
+    return render_template("index.html")   # Lobby (create/join)
+
+@app.route("/game")
+def game():
+    return render_template("game.html")   # Board UI
+
+# ---------- Socket.IO Events ----------
+@socketio.on("create_game")
+def create_game():
+    code = generate_code()
+    games[code] = {"board": [""] * 9, "turn": "X"}
+    join_room(code)
+    emit("game_created", {
+        "code": code,
+        "board": games[code]["board"],
+        "turn": "X"
+    })
+    # Tell creator explicitly they are waiting
+    emit("waiting", {"message": "Waiting for another player..."})
+
+@socketio.on("join_game")
+def join_game(data):
+    code = data["code"].strip().upper()
+    if code in games:
+        join_room(code)
+        # Send to joining player
+        emit("game_joined", {
+            "code": code,
+            "board": games[code]["board"],
+            "turn": games[code]["turn"]
+        })
+        # Notify everyone in room
+        emit("start_game", {
+            "message": "Both players connected!",
+            "board": games[code]["board"],
+            "turn": games[code]["turn"]
+        }, room=code)
+    else:
+        emit("error", {"message": "Invalid game code"})
+
+@socketio.on("make_move")
+def make_move(data):
+    code = data["code"]
+    index = data["index"]
+
+    if code not in games:
+        return
+
+    game = games[code]
+    if game["board"][index] == "":
+        game["board"][index] = game["turn"]
+        game["turn"] = "O" if game["turn"] == "X" else "X"
+        emit("move_made", {"board": game["board"], "turn": game["turn"]}, room=code)
+
+# ---------- Run ----------
+# ---------------------- RUN APP ----------------------
 # ---------------------- RUN APP ----------------------
 if __name__ == "__main__":
-    
     port = int(os.environ.get("PORT", 5000))  # Get port from environment
-    app.run(host="0.0.0.0", port=port, debug=True)
+    socketio.run(app, host="0.0.0.0", port=port, debug=True)
