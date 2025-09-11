@@ -1,158 +1,651 @@
-<style>
-#board {
-  display: grid;
-  grid-template-columns: repeat(3, 60px);
-  grid-template-rows: repeat(3, 60px);
-  gap: 5px;
-  margin-top: 20px;
-}
-
-#board .cell {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-}
-</style>
-
-
-
-<h1>🎮 Tic Tac Toe</h1>
-<p id="status">Choose how you want to play:</p>
-
-<!-- Pre-game choice -->
-<div id="modeChoice">
-  <button onclick="startLocal()">1 Device (Local 2 Players)</button>
-  <button onclick="startOnline()">2 Devices (Online Multiplayer)</button>
-</div>
-
-<!-- Online join form -->
-<div id="onlineForm" style="display:none;">
-  <button onclick="createGame()">Create New Game</button>
-  <form id="joinForm" onsubmit="joinGame(event)">
-    <input id="joinCode" placeholder="Enter Game Code">
-    <button type="submit">Join Game</button>
-  </form>
-</div>
-
-<!-- Game board -->
-<div id="gameArea" style="display:none;">
-  <h3 id="gameCode"></h3>
-  <p id="turn"></p>
-  <div id="board"></div>
-</div>
-
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-let socket = io();
-let gameCode = null;
-let localMode = false;
-let turn = "X";
-
-// Pre-game choice functions
-function startLocal() {
-  localMode = true;
-  document.getElementById("modeChoice").style.display = "none";
-  document.getElementById("gameArea").style.display = "block";
-  initLocalBoard();
-}
-
-function startOnline() {
-  localMode = false;
-  document.getElementById("modeChoice").style.display = "none";
-  document.getElementById("onlineForm").style.display = "block";
-}
-
-// Local 2-player game
-function initLocalBoard() {
-  const board = ["", "", "", "", "", "", "", "", ""];
-  renderBoard(board, turn);
-}
-
-// Render board (shared for local & online)
-function renderBoard(board, currentTurn) {
-  const boardDiv = document.getElementById("board");
-  boardDiv.innerHTML = "";
-  board.forEach((cell, i) => {
-    const btn = document.createElement("button");
-    btn.classList.add("cell");
-    btn.innerText = cell || "-";
-    btn.onclick = () => {
-      if (localMode) {
-        if (!cell) {
-          board[i] = turn;
-          const winner = checkWinner(board);
-          if (winner) {
-            alert(winner === "Tie" ? "It's a tie!" : winner + " wins!");
-            initLocalBoard();
-          } else {
-            turn = turn === "X" ? "O" : "X";
-            renderBoard(board, turn);
-          }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Tic Tac Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #dfe6e9;
+            --success: #00b894;
+            --x-color: #e84393;
+            --o-color: #0984e3;
+            --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-      } else {
-        socket.emit("make_move", { code: gameCode, index: i });
-      }
-    };
-    boardDiv.appendChild(btn);
-  });
-  document.getElementById("turn").innerText = "Turn: " + (localMode ? turn : currentTurn);
-}
 
-// Local winner check
-function checkWinner(board) {
-  const wins = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
-  for (const [a,b,c] of wins) {
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
-  }
-  return board.includes("") ? null : "Tie";
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-// --- Online Multiplayer ---
-function createGame() {
-  socket.emit("create_game");
-  document.getElementById("status").innerText = "Creating game...";
-  document.getElementById("joinForm").style.display = "none";
-}
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            color: var(--dark);
+        }
 
-function joinGame(e) {
-  e.preventDefault();
-  const code = document.getElementById("joinCode").value;
-  socket.emit("join_game", { code });
-}
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 1rem;
+            animation: fadeIn 0.8s ease;
+            backdrop-filter: blur(10px);
+        }
 
-// Online socket events
-socket.on("game_created", data => {
-  gameCode = data.code;
-  document.getElementById("gameArea").style.display = "block";
-  document.getElementById("gameCode").innerText = "Game Code: " + data.code;
-});
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
-socket.on("waiting", data => {
-  document.getElementById("status").innerText = data.message;
-});
+        h1 {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-socket.on("game_joined", data => {
-  gameCode = data.code;
-  document.getElementById("status").innerText = "Joined game " + data.code;
-  document.getElementById("onlineForm").style.display = "none";
-  document.getElementById("gameArea").style.display = "block";
-});
+        h2 {
+            color: var(--dark);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
 
-socket.on("start_game", data => {
-  renderBoard(data.board, data.turn);
-});
+        .user-greeting {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
 
-socket.on("move_made", data => renderBoard(data.board, data.turn));
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.5s ease;
+        }
 
-socket.on("game_over", data => {
-  renderBoard(data.board, data.turn);
-  alert(data.winner === "Tie" ? "It's a tie!" : data.winner + " wins!");
-});
-</script>
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--secondary);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell.x {
+            color: var(--x-color);
+        }
+
+        .cell.o {
+            color: var(--o-color);
+        }
+
+        .cell:hover:not(.disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            background: #f8f9fa;
+        }
+
+        .cell.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .game-info {
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            min-height: 2rem;
+        }
+
+        .game-code {
+            background: var(--secondary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .winner {
+            animation: celebrate 1s ease infinite;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease;
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .connected {
+            background: var(--success);
+            color: white;
+        }
+
+        .disconnected {
+            background: #ff7675;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes x-move {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        @keyframes o-move {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .mark-x::before, .mark-x::after {
+            content: '';
+            position: absolute;
+            width: 70%;
+            height: 8px;
+            background: var(--x-color);
+            border-radius: 4px;
+        }
+
+        .mark-x::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+            top: 50%;
+            left: 50%;
+            animation: x-move 0.5s ease;
+        }
+
+        .mark-x::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+            top: 50%;
+            left: 50%;
+            animation: x-move 0.5s ease;
+        }
+
+        .mark-o::before {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            border: 8px solid var(--o-color);
+            border-radius: 50%;
+            animation: o-move 0.5s ease;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            #board {
+                max-width: 300px;
+            }
+            
+            .cell {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-gamepad"></i> Tic Tac Toe</h1>
+        <div class="user-greeting">Hello {{ user }}</div>
+    </header>
+    
+    <div class="container">
+        <!-- Mode Selection Section -->
+        <div id="modeChoice" class="section">
+            <h2 class="section-title"><i class="fas fa-chess-board"></i> Choose Game Mode</h2>
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="startLocal()">
+                    <i class="fas fa-users"></i> 1 Device (Local 2 Players)
+                </button>
+                <button class="btn btn-secondary" onclick="startOnline()">
+                    <i class="fas fa-globe"></i> 2 Devices (Online Multiplayer)
+                </button>
+            </div>
+        </div>
+        
+        <!-- Online Multiplayer Section -->
+        <div id="onlineForm" class="section hidden">
+            <h2 class="section-title"><i class="fas fa-wifi"></i> Online Multiplayer</h2>
+            <div class="buttons">
+                <button class="btn btn-accent" onclick="createGame()">
+                    <i class="fas fa-plus"></i> Create New Game
+                </button>
+            </div>
+            <form id="joinForm" onsubmit="joinGame(event)">
+                <div class="form-group">
+                    <input id="joinCode" placeholder="Enter Game Code" required>
+                </div>
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Join Game
+                </button>
+            </form>
+        </div>
+        
+        <!-- Game Area -->
+        <div id="gameArea" class="section hidden">
+            <h2 class="section-title"><i class="fas fa-play-circle"></i> Game Board</h2>
+            <div class="game-code" id="gameCode"></div>
+            <div class="game-info">
+                <p id="status">Choose how you want to play:</p>
+                <p id="turn"></p>
+            </div>
+            <div id="board"></div>
+            <div class="buttons" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="resetGame()">
+                    <i class="fas fa-redo"></i> Reset Game
+                </button>
+                <button class="btn btn-secondary" onclick="backToMenu()">
+                    <i class="fas fa-arrow-left"></i> Back to Menu
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="connectionStatus" class="connection-status hidden">
+        <i class="fas fa-wifi"></i>
+        <span>Connecting...</span>
+    </div>
+
+    <script>
+        let socket = io();
+        let gameCode = null;
+        let localMode = false;
+        let turn = "X";
+        let gameActive = true;
+        let boardState = ["", "", "", "", "", "", "", "", ""];
+
+        // Connection status indicator
+        socket.on('connect', () => {
+            updateConnectionStatus('connected', 'Connected');
+        });
+
+        socket.on('disconnect', () => {
+            updateConnectionStatus('disconnected', 'Disconnected');
+        });
+
+        function updateConnectionStatus(status, text) {
+            const statusElem = document.getElementById('connectionStatus');
+            statusElem.className = `connection-status ${status}`;
+            statusElem.innerHTML = `<i class="fas fa-${status === 'connected' ? 'wifi' : 'exclamation-triangle'}"></i> <span>${text}</span>`;
+            statusElem.classList.remove('hidden');
+        }
+
+        // Pre-game choice functions
+        function startLocal() {
+            localMode = true;
+            hideElement("modeChoice");
+            showElement("gameArea");
+            initLocalBoard();
+            document.getElementById("status").textContent = "Local Multiplayer Game";
+            document.getElementById("turn").textContent = "Player X's Turn";
+        }
+
+        function startOnline() {
+            localMode = false;
+            hideElement("modeChoice");
+            showElement("onlineForm");
+            document.getElementById("status").textContent = "Create or join an online game";
+        }
+
+        // Local 2-player game
+        function initLocalBoard() {
+            boardState = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            renderBoard(boardState, turn);
+        }
+
+        // Render board (shared for local & online)
+        function renderBoard(board, currentTurn) {
+            const boardDiv = document.getElementById("board");
+            boardDiv.innerHTML = "";
+            
+            board.forEach((cell, i) => {
+                const cellDiv = document.createElement("div");
+                cellDiv.classList.add("cell");
+                
+                if (cell === "X") {
+                    cellDiv.classList.add("mark-x");
+                } else if (cell === "O") {
+                    cellDiv.classList.add("mark-o");
+                }
+                
+                if (!gameActive || cell !== "") {
+                    cellDiv.classList.add("disabled");
+                }
+                
+                cellDiv.onclick = () => handleCellClick(i);
+                boardDiv.appendChild(cellDiv);
+            });
+            
+            document.getElementById("turn").textContent = `Player ${currentTurn}'s Turn`;
+        }
+
+        function handleCellClick(index) {
+            if (!gameActive || boardState[index] !== "") return;
+            
+            if (localMode) {
+                boardState[index] = turn;
+                const winner = checkWinner(boardState);
+                
+                if (winner) {
+                    gameActive = false;
+                    if (winner === "Tie") {
+                        document.getElementById("status").innerHTML = "<span class='winner'>It's a tie!</span>";
+                    } else {
+                        document.getElementById("status").innerHTML = `<span class='winner'>Player ${winner} wins!</span>`;
+                    }
+                } else {
+                    turn = turn === "X" ? "O" : "X";
+                    document.getElementById("turn").textContent = `Player ${turn}'s Turn`;
+                }
+                renderBoard(boardState, turn);
+            } else {
+                socket.emit("make_move", { code: gameCode, index: index });
+            }
+        }
+
+        // Local winner check
+        function checkWinner(board) {
+            const wins = [
+                [0,1,2],[3,4,5],[6,7,8],
+                [0,3,6],[1,4,7],[2,5,8],
+                [0,4,8],[2,4,6]
+            ];
+            
+            for (const [a,b,c] of wins) {
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            
+            return board.includes("") ? null : "Tie";
+        }
+
+        // --- Online Multiplayer ---
+        function createGame() {
+            socket.emit("create_game");
+            document.getElementById("status").textContent = "Creating game...";
+            document.getElementById("joinForm").style.display = "none";
+        }
+
+        function joinGame(e) {
+            e.preventDefault();
+            const code = document.getElementById("joinCode").value;
+            socket.emit("join_game", { code: code.toUpperCase() });
+        }
+
+        // Online socket events
+        socket.on("game_created", data => {
+            gameCode = data.code;
+            showElement("gameArea");
+            document.getElementById("gameCode").textContent = `Game Code: ${data.code}`;
+            document.getElementById("status").textContent = "Waiting for another player to join...";
+            document.getElementById("onlineForm").style.display = "none";
+        });
+
+        socket.on("waiting", data => {
+            document.getElementById("status").textContent = data.message;
+        });
+
+        socket.on("game_joined", data => {
+            gameCode = data.code;
+            document.getElementById("status").textContent = `Joined game ${data.code}`;
+            document.getElementById("onlineForm").style.display = "none";
+            showElement("gameArea");
+            document.getElementById("gameCode").textContent = `Game Code: ${data.code}`;
+        });
+
+        socket.on("start_game", data => {
+            boardState = data.board;
+            gameActive = true;
+            renderBoard(data.board, data.turn);
+            document.getElementById("status").textContent = "Game started!";
+        });
+
+        socket.on("move_made", data => {
+            boardState = data.board;
+            renderBoard(data.board, data.turn);
+        });
+
+        socket.on("game_over", data => {
+            boardState = data.board;
+            gameActive = false;
+            renderBoard(data.board, data.turn);
+            
+            if (data.winner === "Tie") {
+                document.getElementById("status").innerHTML = "<span class='winner'>It's a tie!</span>";
+            } else {
+                document.getElementById("status").innerHTML = `<span class='winner'>Player ${data.winner} wins!</span>`;
+            }
+        });
+
+        socket.on("not_your_turn", data => {
+            // Show a subtle notification that it's not the player's turn
+            const statusElem = document.getElementById("status");
+            const originalText = statusElem.textContent;
+            statusElem.textContent = data.message;
+            statusElem.classList.add('pulse');
+            
+            setTimeout(() => {
+                statusElem.textContent = originalText;
+                statusElem.classList.remove('pulse');
+            }, 2000);
+        });
+
+        // Utility functions
+        function hideElement(id) {
+            document.getElementById(id).classList.add("hidden");
+        }
+
+        function showElement(id) {
+            const elem = document.getElementById(id);
+            elem.classList.remove("hidden");
+            elem.classList.add("fade-in");
+        }
+
+        function resetGame() {
+            if (localMode) {
+                initLocalBoard();
+                document.getElementById("status").textContent = "Local Multiplayer Game";
+            } else if (gameCode) {
+                socket.emit("reset_game", { code: gameCode });
+            }
+        }
+
+        function backToMenu() {
+            hideElement("gameArea");
+            hideElement("onlineForm");
+            showElement("modeChoice");
+            
+            if (!localMode && gameCode) {
+                socket.emit("leave_game", { code: gameCode });
+                gameCode = null;
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some subtle animation to the header
+            document.querySelector('h1').classList.add('pulse');
+            
+            // Show connection status after a brief delay
+            setTimeout(() => {
+                updateConnectionStatus('connected', 'Connected');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -344,6 +344,8 @@ def index():
 def game():
     return render_template("game.html")   # Board UI
 
+  
+
 # ---------- Winner Check ----------
 def check_winner(board):
     # All winning combinations (indices)
@@ -360,24 +362,26 @@ def check_winner(board):
         return "Tie"
     return None  # Game still ongoing
 
+
+
+
 # ---------- Socket.IO Events ----------
 @socketio.on("create_game")
 def create_game():
     code = generate_code()
-    games[code] = {"board": [""] * 9, "turn": "X"}
+    games[code] = {"board": [""] * 9, "turn": "X", "players": {}}
     join_room(code)
-    emit("game_created", {
-        "code": code,
-        "board": games[code]["board"],
-        "turn": "X"
-    })
-    emit("waiting", {"message": "Waiting for another player..."})
+    games[code]["players"][request.sid] = "X"  # creator is X
+    emit("game_created", {"code": code, "board": games[code]["board"], "turn": "X"})
+    
 
 @socketio.on("join_game")
 def join_game(data):
     code = data["code"].strip().upper()
-    if code in games:
+    if code in games and len(games[code]["players"]) < 2:
         join_room(code)
+        # Second player is O
+        games[code]["players"][request.sid] = "O"
         emit("game_joined", {
             "code": code,
             "board": games[code]["board"],
@@ -389,7 +393,7 @@ def join_game(data):
             "turn": games[code]["turn"]
         }, room=code)
     else:
-        emit("error", {"message": "Invalid game code"})
+        emit("error", {"message": "Invalid game code or room full"})
 
 @socketio.on("make_move")
 def make_move(data):
@@ -397,11 +401,27 @@ def make_move(data):
     index = data["index"]
 
     if code not in games:
+        emit("error", {"message": "Invalid game code"})
         return
 
     game = games[code]
+    player_symbol = game["players"].get(request.sid)
+
+    if player_symbol != game["turn"]:
+        # It's not this player's turn
+        # Find whose turn it actually is
+        for sid, symbol in game["players"].items():
+            if symbol == game["turn"]:
+                current_sid = sid
+                break
+
+        # Send a message to the player who clicked out-of-turn
+        emit("not_your_turn", {"message": f"It's player {game['turn']}'s turn!"})
+        return
+
+    # Make move if the cell is empty
     if game["board"][index] == "":
-        game["board"][index] = game["turn"]
+        game["board"][index] = player_symbol
         winner = check_winner(game["board"])
 
         if winner:
@@ -410,6 +430,8 @@ def make_move(data):
             # Switch turn
             game["turn"] = "O" if game["turn"] == "X" else "X"
             emit("move_made", {"board": game["board"], "turn": game["turn"]}, room=code)
+
+
 
 # ---------- Run ----------
 if __name__ == "__main__":
