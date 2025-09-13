@@ -285,20 +285,31 @@
 <body>  
 
     <header class="site-header">
-        <div class="container header-inner">
-            <a class="brand" href="/">
-                <i class="fas fa-pen-fancy"></i>
-                BeautifulForms
+    <div class="container header-inner">
+        <a class="brand" href="/">
+            <i class="fas fa-pen-fancy"></i>
+            BeautifulForms
+        </a>
+        <nav class="nav">
+            <a class="nav-link" href="/login">
+                <i class="fas fa-lock"></i>
+                Admin
             </a>
-            <nav class="nav">
-                <a class="nav-link" href="/login">
-                    <i class="fas fa-lock"></i>
-                    Admin
-                </a>
-            </nav>
-        </div>
-         
-    </header>
+            <!-- Language Selector -->
+            <select id="language-selector" class="nav-link" style="margin-left: 10px;">
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="it">Italiano</option>
+                <option value="de">Deutsch</option>
+                <option value="nl">Nederlands</option>
+                <option value="tr">Türkçe</option>
+            </select>
+        </nav>
+    </div>
+</header>
+
+            
 
     <main class="container">
         <div class="main-card">
@@ -349,6 +360,23 @@
                 });
             });
         });
+
+          // Language selector script
+    document.getElementById('language-selector').addEventListener('change', function() {
+        const lang = this.value;
+        document.cookie = "language=" + lang + "; path=/; max-age=31536000"; // Save language cookie
+        location.reload(); // Reload page to apply translation
+    });
+
+    // Optional: preselect current language from cookie
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [k, v] = cookie.trim().split('=');
+        acc[k] = v;
+        return acc;
+    }, {});
+    if(cookies.language) {
+        document.getElementById('language-selector').value = cookies.language;
+    }
     </script>
 </body>
 </html>
