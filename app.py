@@ -15,6 +15,9 @@ import random, string
 from flask import Flask
 from flask import Flask
 from flask_socketio import SocketIO, emit, join_room
+from flask import request, make_response
+from bs4 import BeautifulSoup
+import html
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "mysecretkey"
@@ -433,9 +436,7 @@ def make_move(data):
             emit("move_made", {"board": game["board"], "turn": game["turn"]}, room=code)
 
             # Add these imports at the top of your app.py
-from flask import request, make_response
-from bs4 import BeautifulSoup
-import html
+
 
 # Enhanced translation dictionary with Turkish support
 translations = {
