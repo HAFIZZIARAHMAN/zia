@@ -626,6 +626,31 @@ translations = {
         "es": "Pensando", "fr": "Réflexion", "it": "Pensando", 
         "de": "Denken", "nl": "Denken", "tr": "Düşünüyor"
     },
+    # Home page translations
+    "Home": {
+        "es": "Inicio", "fr": "Accueil", "it": "Home", "de": "Startseite", "nl": "Home", "tr": "Ana Sayfa"
+    },
+    "About Me": {
+        "es": "Sobre mí", "fr": "À propos de moi", "it": "Su di me", "de": "Über mich", "nl": "Over mij", "tr": "Hakkımda"
+    },
+    "Contact": {
+        "es": "Contacto", "fr": "Contact", "it": "Contatto", "de": "Kontakt", "nl": "Contact", "tr": "İletişim"
+    },
+    "Welcome To Xia-09's Corner": {
+        "es": "Bienvenido al rincón de Xia-09", "fr": "Bienvenue dans le coin de Xia-09", "it": "Benvenuto nell'angolo di Xia-09", "de": "Willkommen in Xia-09s Ecke", "nl": "Welkom in Xia-09's hoek", "tr": "Xia-09 Köşesine Hoşgeldiniz"
+    },
+    "Choose Any Game": {
+        "es": "Elige cualquier juego", "fr": "Choisissez un jeu", "it": "Scegli un gioco", "de": "Wähle ein Spiel", "nl": "Kies een spel", "tr": "Herhangi bir oyun seçin"
+    },
+    "Perenoid": {
+        "es": "Perenoide", "fr": "Perenoïde", "it": "Perenoide", "de": "Perenoid", "nl": "Perenoid", "tr": "Perenoid"
+    },
+    "AI": {
+        "es": "IA", "fr": "IA", "it": "IA", "de": "KI", "nl": "AI", "tr": "YZ"
+    },
+    "gamr": {
+        "es": "juego", "fr": "jeu", "it": "gioco", "de": "Spiel", "nl": "spel", "tr": "oyun"
+    },
     # Add more translations as needed
 }
 
@@ -636,33 +661,52 @@ def translate_text(text, lang):
     return text  # Return original text if no translation available
 
 def translate_html(html_content, lang):
-    """Parse HTML and translate all text content"""
-    if lang == 'en':  # No translation needed for English
-        return html_content
-        
+    """Parse HTML and translate all visible text and common attributes.
+
+    Changes made:
+    - Always adds the language switcher so users can change language even when current lang is 'en'.
+    - Translates text nodes (skips script/style/head/link/meta) by looking up exact strings in translations.
+    - Translates `input` element `value` and `placeholder` attributes.
+    - Keeps structure and whitespace of original content where possible.
+    """
     soup = BeautifulSoup(html_content, 'html.parser')
+
+    # Translate common attributes on inputs (value, placeholder)
+    for inp in soup.find_all('input'):
+        # translate placeholder
+        if inp.get('placeholder'):
+            orig = inp['placeholder'].strip()
+            if orig:
+                tr = translate_text(orig, lang)
+                if tr != orig:
+                    inp['placeholder'] = tr
+        # translate value (e.g., buttons)
+        if inp.get('value'):
+            orig = inp['value'].strip()
+            if orig:
+                tr = translate_text(orig, lang)
+                if tr != orig:
+                    inp['value'] = tr
+
+    # Translate text nodes (visible text). Skip tags where we must not change script/style/meta/link/head
+    SKIP_PARENTS = set(['script', 'style', 'meta', 'head', 'link', '[document]'])
+    for text_node in soup.find_all(string=True):
+        parent_name = getattr(text_node.parent, 'name', None)
+        if parent_name and parent_name.lower() in SKIP_PARENTS:
+            continue
+        stripped = text_node.string.strip() if text_node.string else ''
+        if not stripped:
+            continue
+        translated = translate_text(stripped, lang)
+        if translated != stripped:
+            # Preserve surrounding whitespace
+            new_text = text_node.string.replace(stripped, translated)
+            text_node.replace_with(new_text)
     
-    # Elements to translate
-    elements_to_translate = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 
-                                         'div', 'li', 'td', 'th', 'label', 'button', 'title'])
-    
-    for element in elements_to_translate:
-        if element.string and element.string.strip():
-            original_text = element.string.strip()
-            translated_text = translate_text(original_text, lang)
-            if translated_text != original_text:
-                element.string.replace_with(translated_text)
-        # Also check for placeholder text in input fields
-        if element.name == 'input' and element.get('placeholder'):
-            original_placeholder = element['placeholder']
-            translated_placeholder = translate_text(original_placeholder, lang)
-            if translated_placeholder != original_placeholder:
-                element['placeholder'] = translated_placeholder
-    
-    # Add language switcher to the page
+    # Add language switcher to the page (always present so users can switch languages)
     language_switcher = soup.new_tag('div')
     language_switcher['style'] = 'position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'
-    
+
     languages = {
         'en': 'English',
         'es': 'Español',
@@ -672,7 +716,7 @@ def translate_html(html_content, lang):
         'nl': 'Nederlands',
         'tr': 'Türkçe'  # Added Turkish
     }
-    
+
     for code, name in languages.items():
         button = soup.new_tag('button')
         button['onclick'] = f'setLanguage("{code}")'
@@ -724,8 +768,11 @@ def translate_html(html_content, lang):
 @app.after_request
 def translate_response(response):
     # Only translate HTML responses
-    if response.content_type == 'text/html; charset=utf-8':
+    # Accept any text/html variant (charset may vary)
+    content_type = (response.content_type or '').lower()
+    if content_type.startswith('text/html'):
         lang = request.cookies.get('language', 'en')
+        # If language is english, we still inject the switcher so user can change it
         content = response.get_data(as_text=True)
         translated_content = translate_html(content, lang)
         response.set_data(translated_content)
