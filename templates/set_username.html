@@ -423,7 +423,7 @@
             padding: 16px;
             margin: 16px 0;
         }
-
+        
         .privacy-note i {
             color: var(--primary);
             margin-right: 8px;
@@ -460,12 +460,13 @@
     </style>
 </head>
 <body>
+    <form method="POST" class="setup-form" action="/set_username">
     <div class="setup-container">
         <!-- Progress Bar -->
         <div class="progress-bar">
             <div class="progress-fill"></div>
         </div>
-
+        
         <!-- Setup Card -->
         <div class="setup-card">
             <div class="setup-header">
@@ -632,6 +633,7 @@
         </div>
     </div>
 
+</form>
     <script>
         // Checkbox functionality
         function toggleCheckbox(checkbox) {
