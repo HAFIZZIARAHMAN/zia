@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Settings</title>
+</head>
+<body>
+  <h1>Settings</h1>
+  <form method="POST" action="/settings">
+    <label>Name: <input type="text" name="name" value="{{ name }}"></label><br>
+    <label>Email: <input type="email" name="email" value="{{ email }}"></label><br>
+    <button type="submit">Save</button>
+  </form>
+  <p><a href="/home">Back to Home</a></p>
+</body>
+</html>

@@ -1,0 +1,204 @@
+(17664) wsgi starting up on http://0.0.0.0:5000
+(17664) accepted ('127.0.0.1', 50738)
+127.0.0.1 - - [04/Oct/2025 16:21:37] "GET /_routes HTTP/1.1" 200 5707 0.000925
+(17664) accepted ('127.0.0.1', 50760)
+(17664) accepted ('127.0.0.1', 50761)
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /home HTTP/1.1" 302 378 0.001322
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.009754
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.007000
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.004096
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.002771
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.003538
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.003110
+127.0.0.1 - - [04/Oct/2025 16:22:03] "GET /signin HTTP/1.1" 200 11669 0.004379
+[2025-10-04 16:22:11,065] INFO in app: User logged in: 1234@gmail.com
+127.0.0.1 - - [04/Oct/2025 16:22:11] "POST /signin HTTP/1.1" 302 533 0.004668
+[2025-10-04 16:22:11,072] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:22:11] "GET /home HTTP/1.1" 200 33990 0.010940
+127.0.0.1 - - [04/Oct/2025 16:22:12] "GET /me_profile HTTP/1.1" 302 419 0.002158
+127.0.0.1 - - [04/Oct/2025 16:22:12] "GET /profile/hiimzia HTTP/1.1" 200 2028 0.006563
+(17664) accepted ('127.0.0.1', 50834)
+127.0.0.1 - - [04/Oct/2025 16:25:26] "GET / HTTP/1.1" 200 7066 0.005955
+127.0.0.1 - - [04/Oct/2025 16:25:28] "GET /signin HTTP/1.1" 200 11669 0.005166
+[2025-10-04 16:25:34,562] INFO in app: User logged in: 1234@gmail.com
+127.0.0.1 - - [04/Oct/2025 16:25:34] "POST /signin HTTP/1.1" 302 533 0.002598
+(17664) accepted ('127.0.0.1', 50835)
+[2025-10-04 16:25:34,568] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:25:34] "GET /home HTTP/1.1" 200 35241 0.045558
+127.0.0.1 - - [04/Oct/2025 16:25:36] "GET /me_profile HTTP/1.1" 302 419 0.001961
+127.0.0.1 - - [04/Oct/2025 16:25:36] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.009094
+127.0.0.1 - - [04/Oct/2025 16:25:43] "GET /me_profile HTTP/1.1" 302 419 0.002177
+127.0.0.1 - - [04/Oct/2025 16:25:43] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.002687
+[2025-10-04 16:25:50,291] INFO in app: /search_users q=qweer rows=0
+127.0.0.1 - - [04/Oct/2025 16:25:50] "GET /search_users?q=qweer HTTP/1.1" 200 134 0.003180
+[2025-10-04 16:25:50,829] INFO in app: /search_users q=qweerty rows=0
+127.0.0.1 - - [04/Oct/2025 16:25:50] "GET /search_users?q=qweerty HTTP/1.1" 200 134 0.003205
+[2025-10-04 16:25:53,359] INFO in app: /search_users q=qweer rows=0
+127.0.0.1 - - [04/Oct/2025 16:25:53] "GET /search_users?q=qweer HTTP/1.1" 200 134 0.003212
+[2025-10-04 16:25:53,813] INFO in app: /search_users q=qwee rows=0
+127.0.0.1 - - [04/Oct/2025 16:25:53] "GET /search_users?q=qwee HTTP/1.1" 200 134 0.003057
+[2025-10-04 16:25:54,166] INFO in app: /search_users q=qwe rows=1
+127.0.0.1 - - [04/Oct/2025 16:25:54] "GET /search_users?q=qwe HTTP/1.1" 200 227 0.003455
+127.0.0.1 - - [04/Oct/2025 16:25:54] "GET /api/profile/qwerty HTTP/1.1" 200 283 0.001618
+127.0.0.1 - - [04/Oct/2025 16:28:33] "GET / HTTP/1.1" 200 7066 0.003757
+127.0.0.1 - - [04/Oct/2025 16:28:35] "GET /signin HTTP/1.1" 200 11669 0.005305
+[2025-10-04 16:28:42,797] INFO in app: User logged in: 1234@gmail.com
+127.0.0.1 - - [04/Oct/2025 16:28:42] "POST /signin HTTP/1.1" 302 533 0.003099
+(17664) accepted ('127.0.0.1', 50884)
+[2025-10-04 16:28:42,803] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:28:42] "GET /home HTTP/1.1" 200 34951 0.044627
+127.0.0.1 - - [04/Oct/2025 16:28:46] "GET /me_profile HTTP/1.1" 302 419 0.002238
+127.0.0.1 - - [04/Oct/2025 16:28:46] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.004069
+[2025-10-04 16:28:53,708] INFO in app: /search_users q=q rows=1
+127.0.0.1 - - [04/Oct/2025 16:28:53] "GET /search_users?q=q HTTP/1.1" 200 227 0.003322
+[2025-10-04 16:28:53,983] INFO in app: /search_users q=qw rows=1
+127.0.0.1 - - [04/Oct/2025 16:28:53] "GET /search_users?q=qw HTTP/1.1" 200 227 0.002779
+127.0.0.1 - - [04/Oct/2025 16:28:54] "GET /api/profile/qwerty HTTP/1.1" 200 284 0.001600
+[2025-10-04 16:29:02,048] INFO in app: /search_users q=q rows=1
+127.0.0.1 - - [04/Oct/2025 16:29:02] "GET /search_users?q=q HTTP/1.1" 200 227 0.002995
+127.0.0.1 - - [04/Oct/2025 16:29:02] "GET /api/profile/qwerty HTTP/1.1" 200 284 0.001690
+127.0.0.1 - - [04/Oct/2025 16:29:04] "GET /profile/qwerty HTTP/1.1" 200 2671 0.003491
+127.0.0.1 - - [04/Oct/2025 16:29:07] "POST /follow_toggle/ahmet@gmail.com HTTP/1.1" 302 416 0.010791
+127.0.0.1 - - [04/Oct/2025 16:29:07] "GET /profile/qwerty HTTP/1.1" 200 2673 0.002653
+127.0.0.1 - - [04/Oct/2025 16:29:09] "GET /profile/qwerty HTTP/1.1" 200 2673 0.004292
+127.0.0.1 - - [04/Oct/2025 16:29:11] "GET /profile/qwerty HTTP/1.1" 200 2673 0.006982
+127.0.0.1 - - [04/Oct/2025 16:29:11] "GET /profile/qwerty HTTP/1.1" 200 2673 0.004735
+127.0.0.1 - - [04/Oct/2025 16:29:12] "GET /profile/qwerty HTTP/1.1" 200 2673 0.002593
+127.0.0.1 - - [04/Oct/2025 16:29:12] "GET /profile/qwerty HTTP/1.1" 200 2673 0.002709
+127.0.0.1 - - [04/Oct/2025 16:29:18] "GET /me_profile HTTP/1.1" 302 419 0.002139
+127.0.0.1 - - [04/Oct/2025 16:29:18] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.004979
+(17664) accepted ('127.0.0.1', 51008)
+(17664) accepted ('127.0.0.1', 51009)
+127.0.0.1 - - [04/Oct/2025 16:38:33] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.008143
+127.0.0.1 - - [04/Oct/2025 16:38:33] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.002906
+127.0.0.1 - - [04/Oct/2025 16:38:33] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003212
+127.0.0.1 - - [04/Oct/2025 16:38:33] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.002687
+127.0.0.1 - - [04/Oct/2025 16:38:33] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003731
+127.0.0.1 - - [04/Oct/2025 16:38:42] "GET / HTTP/1.1" 200 7066 0.003490
+127.0.0.1 - - [04/Oct/2025 16:38:47] "GET /signin HTTP/1.1" 200 11669 0.005370
+[2025-10-04 16:38:53,576] INFO in app: User logged in: 1234@gmail.com
+127.0.0.1 - - [04/Oct/2025 16:38:53] "POST /signin HTTP/1.1" 302 533 0.002677
+[2025-10-04 16:38:53,582] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:38:53] "GET /home HTTP/1.1" 200 35221 0.045077
+127.0.0.1 - - [04/Oct/2025 16:38:55] "GET /me_profile HTTP/1.1" 302 419 0.002200
+127.0.0.1 - - [04/Oct/2025 16:38:55] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003090
+[2025-10-04 16:38:59,726] INFO in app: /search_users q=qw rows=1
+127.0.0.1 - - [04/Oct/2025 16:38:59] "GET /search_users?q=qw HTTP/1.1" 200 227 0.003212
+127.0.0.1 - - [04/Oct/2025 16:39:01] "GET /api/profile/qwerty HTTP/1.1" 200 283 0.001589
+[2025-10-04 16:39:05,828] INFO in app: /search_users q=qwe rows=1
+127.0.0.1 - - [04/Oct/2025 16:39:05] "GET /search_users?q=qwe HTTP/1.1" 200 227 0.003179
+127.0.0.1 - - [04/Oct/2025 16:39:06] "GET /api/profile/qwerty HTTP/1.1" 200 283 0.001545
+127.0.0.1 - - [04/Oct/2025 16:39:08] "GET /profile/qwerty/following HTTP/1.1" 404 365 0.001070
+127.0.0.1 - - [04/Oct/2025 16:39:10] "GET /profile/qwerty/followers HTTP/1.1" 404 365 0.001311
+127.0.0.1 - - [04/Oct/2025 16:39:15] "GET /me_profile HTTP/1.1" 302 419 0.002558
+127.0.0.1 - - [04/Oct/2025 16:39:15] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003249
+127.0.0.1 - - [04/Oct/2025 16:39:17] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.006407
+127.0.0.1 - - [04/Oct/2025 16:39:18] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.004111
+127.0.0.1 - - [04/Oct/2025 16:39:19] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003879
+127.0.0.1 - - [04/Oct/2025 16:39:20] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003962
+127.0.0.1 - - [04/Oct/2025 16:39:21] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.003694
+(17664) accepted ('127.0.0.1', 51148)
+127.0.0.1 - - [04/Oct/2025 16:45:57] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 365 0.001388
+127.0.0.1 - - [04/Oct/2025 16:45:59] "GET /me_profile HTTP/1.1" 302 419 0.003179
+(17664) accepted ('127.0.0.1', 51150)
+127.0.0.1 - - [04/Oct/2025 16:45:59] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.004505
+127.0.0.1 - - [04/Oct/2025 16:45:59] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 365 0.001554
+127.0.0.1 - - [04/Oct/2025 16:46:03] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 365 0.002141
+127.0.0.1 - - [04/Oct/2025 16:46:03] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 365 0.001382
+[2025-10-04 16:46:05,957] INFO in app: /search_users q=qw rows=1
+127.0.0.1 - - [04/Oct/2025 16:46:05] "GET /search_users?q=qw HTTP/1.1" 200 227 0.003047
+127.0.0.1 - - [04/Oct/2025 16:46:07] "GET /api/profile/qwerty HTTP/1.1" 200 283 0.001661
+127.0.0.1 - - [04/Oct/2025 16:46:09] "POST /api/unfollow/qwerty HTTP/1.1" 200 190 0.013880
+127.0.0.1 - - [04/Oct/2025 16:46:09] "POST /api/follow/qwerty HTTP/1.1" 200 189 0.016616
+127.0.0.1 - - [04/Oct/2025 16:46:11] "GET /profile/qwerty HTTP/1.1" 200 2673 0.005424
+127.0.0.1 - - [04/Oct/2025 16:46:11] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 365 0.001645
+[2025-10-04 16:46:43,926] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:43] "GET /home HTTP/1.1" 200 35221 0.040420
+[2025-10-04 16:46:44,081] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:44] "GET /home HTTP/1.1" 200 35221 0.007486
+[2025-10-04 16:46:44,241] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:44] "GET /home HTTP/1.1" 200 35221 0.004854
+[2025-10-04 16:46:44,391] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:44] "GET /home HTTP/1.1" 200 35221 0.005915
+[2025-10-04 16:46:44,549] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:44] "GET /home HTTP/1.1" 200 35221 0.008106
+[2025-10-04 16:46:44,711] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:44] "GET /home HTTP/1.1" 200 35221 0.004810
+[2025-10-04 16:46:44,847] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:44] "GET /home HTTP/1.1" 200 35221 0.005739
+[2025-10-04 16:46:45,009] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.005440
+[2025-10-04 16:46:45,162] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.005186
+[2025-10-04 16:46:45,325] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.006567
+[2025-10-04 16:46:45,493] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.005839
+[2025-10-04 16:46:45,645] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.005991
+[2025-10-04 16:46:45,790] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.005725
+[2025-10-04 16:46:45,952] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:45] "GET /home HTTP/1.1" 200 35221 0.007344
+[2025-10-04 16:46:46,090] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:46] "GET /home HTTP/1.1" 200 35221 0.005816
+[2025-10-04 16:46:46,229] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:46] "GET /home HTTP/1.1" 200 35221 0.006419
+[2025-10-04 16:46:46,375] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:46:46] "GET /home HTTP/1.1" 200 35221 0.005495
+127.0.0.1 - - [04/Oct/2025 16:46:47] "GET /me_profile HTTP/1.1" 302 419 0.001735
+127.0.0.1 - - [04/Oct/2025 16:46:48] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.009628
+[2025-10-04 16:46:54,557] INFO in app: /search_users q=qw rows=1
+127.0.0.1 - - [04/Oct/2025 16:46:54] "GET /search_users?q=qw HTTP/1.1" 200 227 0.002285
+127.0.0.1 - - [04/Oct/2025 16:46:55] "GET /api/profile/qwerty HTTP/1.1" 200 283 0.001625
+[2025-10-04 16:51:22,676] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:22] "GET /home HTTP/1.1" 200 35600 0.042910
+(17664) accepted ('127.0.0.1', 51206)
+[2025-10-04 16:51:22,829] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:22] "GET /home HTTP/1.1" 200 35600 0.005423
+[2025-10-04 16:51:22,979] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:22] "GET /home HTTP/1.1" 200 35600 0.007844
+[2025-10-04 16:51:23,120] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:23] "GET /home HTTP/1.1" 200 35600 0.006297
+[2025-10-04 16:51:23,265] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:23] "GET /home HTTP/1.1" 200 35600 0.007985
+[2025-10-04 16:51:23,386] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:23] "GET /home HTTP/1.1" 200 35600 0.006576
+[2025-10-04 16:51:23,531] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:51:23] "GET /home HTTP/1.1" 200 35600 0.007882
+127.0.0.1 - - [04/Oct/2025 16:51:25] "GET /chat HTTP/1.1" 200 7066 0.002683
+127.0.0.1 - - [04/Oct/2025 16:51:33] "GET /me_profile HTTP/1.1" 302 419 0.002159
+127.0.0.1 - - [04/Oct/2025 16:51:33] "GET /profile/hiimzia HTTP/1.1" 200 2541 0.004500
+(17664) accepted ('127.0.0.1', 51256)
+127.0.0.1 - - [04/Oct/2025 16:56:15] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.033869
+(17664) accepted ('127.0.0.1', 51257)
+127.0.0.1 - - [04/Oct/2025 16:56:16] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003504
+127.0.0.1 - - [04/Oct/2025 16:56:16] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003495
+127.0.0.1 - - [04/Oct/2025 16:56:16] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.004461
+127.0.0.1 - - [04/Oct/2025 16:56:20] "GET / HTTP/1.1" 200 7066 0.003521
+127.0.0.1 - - [04/Oct/2025 16:56:21] "GET /signin HTTP/1.1" 200 11669 0.006442
+[2025-10-04 16:56:28,375] INFO in app: User logged in: 1234@gmail.com
+127.0.0.1 - - [04/Oct/2025 16:56:28] "POST /signin HTTP/1.1" 302 533 0.002686
+[2025-10-04 16:56:28,379] INFO in app: Rendering home for session user=zia ur rahman user_email=1234@gmail.com db_username=hiimzia display_name=hiimzia avatar_text=H
+127.0.0.1 - - [04/Oct/2025 16:56:28] "GET /home HTTP/1.1" 200 35602 0.044974
+127.0.0.1 - - [04/Oct/2025 16:56:29] "GET /me_profile HTTP/1.1" 302 419 0.002347
+127.0.0.1 - - [04/Oct/2025 16:56:29] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003657
+127.0.0.1 - - [04/Oct/2025 16:56:31] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003500
+[2025-10-04 16:56:35,464] INFO in app: /search_users q=qw rows=1
+127.0.0.1 - - [04/Oct/2025 16:56:35] "GET /search_users?q=qw HTTP/1.1" 200 227 0.001424
+127.0.0.1 - - [04/Oct/2025 16:56:36] "GET /api/profile/qwerty HTTP/1.1" 200 283 0.001604
+127.0.0.1 - - [04/Oct/2025 16:56:37] "POST /api/unfollow/qwerty HTTP/1.1" 200 190 0.008009
+127.0.0.1 - - [04/Oct/2025 16:56:38] "POST /api/follow/qwerty HTTP/1.1" 200 189 0.011416
+127.0.0.1 - - [04/Oct/2025 16:56:42] "GET /me_profile HTTP/1.1" 302 419 0.005919
+127.0.0.1 - - [04/Oct/2025 16:56:42] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.002582
+127.0.0.1 - - [04/Oct/2025 16:56:44] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.004014
+127.0.0.1 - - [04/Oct/2025 16:56:44] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003901
+127.0.0.1 - - [04/Oct/2025 16:56:44] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.004703
+127.0.0.1 - - [04/Oct/2025 16:56:45] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003774
+127.0.0.1 - - [04/Oct/2025 16:56:45] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.002659
+127.0.0.1 - - [04/Oct/2025 16:56:45] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.004169
+127.0.0.1 - - [04/Oct/2025 16:56:45] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003664
+127.0.0.1 - - [04/Oct/2025 16:56:45] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.004047
+127.0.0.1 - - [04/Oct/2025 16:56:46] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.005221
+127.0.0.1 - - [04/Oct/2025 16:56:46] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003848
+127.0.0.1 - - [04/Oct/2025 16:56:46] "GET /profile/hiimzia HTTP/1.1" 200 3466 0.003731

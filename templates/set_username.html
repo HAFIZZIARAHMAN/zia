@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - SocialSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --background: #0f0f0f;
+            --surface: #1a1a1a;
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #374151;
+            --border-light: #2d3748;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .setup-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 6px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            width: 75%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .setup-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .setup-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+        }
+
+        .setup-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .setup-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .required::after {
+            content: '*';
+            color: var(--error);
+            margin-left: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            background: var(--background);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .phone-input {
+            display: flex;
+            gap: 12px;
+        }
+
+        .country-code {
+            width: 100px;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .country-code:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .phone-number {
+            flex: 1;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            background: var(--background);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '⌄';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 8px 0;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .checkbox input {
+            opacity: 0;
+            position: absolute;
+        }
+
+        .checkbox.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .checkbox-label a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--border-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .skip-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .skip-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .skip-link a:hover {
+            color: var(--primary);
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .avatar-preview {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .avatar-display {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            border: 3px solid var(--border);
+        }
+
+        .avatar-upload {
+            flex: 1;
+        }
+
+        .upload-btn {
+            padding: 12px 20px;
+            background: var(--border-light);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .upload-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .privacy-note {
+            background: rgba(236, 72, 153, 0.1);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .privacy-note i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .privacy-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .setup-card {
+                padding: 24px;
+            }
+            
+            .setup-title {
+                font-size: 24px;
+            }
+            
+            .phone-input {
+                flex-direction: column;
+            }
+            
+            .country-code {
+                width: 100%;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <!-- Setup Card -->
+        <div class="setup-card">
+            <div class="setup-header">
+                <div class="setup-icon">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <h1 class="setup-title">Complete Your Profile</h1>
+                <p class="setup-subtitle">Add your details to personalize your SocialSphere experience</p>
+            </div>
+
+            <form method="POST" class="setup-form">
+                <!-- Username -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-at"></i>
+                        Username
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="text" name="username" class="form-input" placeholder="Choose a unique username" required maxlength="30">
+                        <div class="input-icon">
+                            <i class="fas fa-check-circle" style="color: var(--success); display: none;"></i>
+                        </div>
+                    </div>
+                    <div class="form-help">This will be your unique identifier on SocialSphere (3-30 characters)</div>
+                </div>
+
+                <!-- Display Name -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-signature"></i>
+                        Display Name
+                    </label>
+                    <input type="text" name="display_name" class="form-input" placeholder="How should we display your name?" value="{{ session.user if session.user else '' }}">
+                    <div class="form-help">This is how other users will see you</div>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-phone"></i>
+                        Phone Number
+                    </label>
+                    <div class="phone-input">
+                        <select class="country-code" name="country_code">
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+92">🇵🇰 +92</option>
+                            <option value="+90">🇹🇷 +90</option>
+                            <option value="+49">🇩🇪 +49</option>
+                            <option value="+33">🇫🇷 +33</option>
+                            <option value="+39">🇮🇹 +39</option>
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+90">TR +90</option>
+                        </select>
+                        <div class="input-wrapper phone-number">
+                            <input type="tel" name="phone_number" class="form-input" placeholder="Enter your phone number">
+                        </div>
+                    </div>
+                    <div class="form-help">Optional - for account recovery and security</div>
+                </div>
+
+                <!-- Bio -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-edit"></i>
+                        Bio
+                    </label>
+                    <textarea name="bio" class="form-input" placeholder="Tell us something about yourself..." rows="3" maxlength="160"></textarea>
+                    <div class="form-help">Brief description about yourself (max 160 characters)</div>
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-venus-mars"></i>
+                        Gender
+                    </label>
+                    <div class="select-wrapper">
+                        <select class="form-select" name="gender">
+                            <option value="">Prefer not to say</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="non-binary">Non-binary</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-birthday-cake"></i>
+                        Date of Birth
+                    </label>
+                    <input type="date" name="date_of_birth" class="form-input" max="{{ '' | date('Y-m-d', -13) }}">
+                    <div class="form-help">You must be at least 13 years old to use SocialSphere</div>
+                </div>
+
+                <!-- Profile Picture -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-camera"></i>
+                        Profile Picture
+                    </label>
+                    <div class="avatar-preview">
+                        <div class="avatar-display" id="avatarDisplay">
+                            {{ (session.user[0] if session.user else 'U') | upper }}
+                        </div>
+                        <div class="avatar-upload">
+                            <div class="upload-btn" onclick="document.getElementById('avatarUpload').click()">
+                                <i class="fas fa-upload"></i>
+                                Upload Photo
+                            </div>
+                            <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Note -->
+                <div class="privacy-note">
+                    <i class="fas fa-shield-alt"></i>
+                    <span class="privacy-text">
+                        Your profile information helps us personalize your experience. You can always update these settings later in your profile.
+                    </span>
+                </div>
+
+                <!-- Terms Agreement -->
+                <div class="checkbox-group">
+                    <div class="checkbox" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" name="agree_terms" required>
+                    </div>
+                    <label class="checkbox-label">
+                        I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="checkbox" onclick="toggleCheckbox(this)">
+                        <input type="checkbox" name="email_notifications">
+                    </div>
+                    <label class="checkbox-label">
+                        Send me email notifications about new features and updates
+                    </label>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Complete Profile
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="skip-link">
+                <a href="/home">Skip for now →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Checkbox functionality
+        function toggleCheckbox(checkbox) {
+            checkbox.classList.toggle('checked');
+            const input = checkbox.querySelector('input');
+            input.checked = !input.checked;
+        }
+
+        // Username availability check
+        const usernameInput = document.querySelector('input[name="username"]');
+        const checkIcon = document.querySelector('.input-icon .fa-check-circle');
+
+        usernameInput.addEventListener('input', function() {
+            const username = this.value.trim();
+            
+            if (username.length >= 3 && username.length <= 30) {
+                // Simulate username check (in real app, this would be an API call)
+                setTimeout(() => {
+                    checkIcon.style.display = 'block';
+                    // In real app, you'd check if username is available
+                }, 500);
+            } else {
+                checkIcon.style.display = 'none';
+            }
+        });
+
+        // Avatar preview
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatarDisplay = document.getElementById('avatarDisplay');
+                    avatarDisplay.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const username = document.querySelector('input[name="username"]').value.trim();
+            const agreeTerms = document.querySelector('input[name="agree_terms"]').checked;
+            
+            if (!username) {
+                e.preventDefault();
+                alert('Please choose a username');
+                return;
+            }
+            
+            if (username.length < 3 || username.length > 30) {
+                e.preventDefault();
+                alert('Username must be between 3 and 30 characters');
+                return;
+            }
+            
+            if (!agreeTerms) {
+                e.preventDefault();
+                alert('Please agree to the Terms of Service and Privacy Policy');
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = form.querySelector('.btn-primary');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+        });
+
+        // Set max date for date of birth (13 years ago)
+        const today = new Date();
+        const minDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+        document.querySelector('input[name="date_of_birth"]').max = minDate.toISOString().split('T')[0];
+
+        // Auto-generate avatar based on display name
+        const displayNameInput = document.querySelector('input[name="display_name"]');
+        displayNameInput.addEventListener('input', function() {
+            const name = this.value.trim() || 'U';
+            const avatarDisplay = document.getElementById('avatarDisplay');
+            avatarDisplay.textContent = name.charAt(0).toUpperCase();
+        });
+
+        // Add character counter for bio
+        const bioTextarea = document.querySelector('textarea[name="bio"]');
+        bioTextarea.addEventListener('input', function() {
+            const counter = this.parentElement.querySelector('.char-counter') || 
+                           document.createElement('div');
+            counter.className = 'form-help char-counter';
+            counter.textContent = `${this.value.length}/160 characters`;
+            
+            if (!this.parentElement.querySelector('.char-counter')) {
+                this.parentElement.appendChild(counter);
+            }
+        });
+    </script>
+</body>
+</html>

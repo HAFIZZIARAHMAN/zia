@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }}'s Profile - SocialSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --secondary: #8b5cf6;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius: 16px;
+        }
+
+        [data-theme="dark"] {
+            --background: #0f0f0f;
+            --surface: #1a1a1a;
+            --card: #262626;
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --border: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .profile-container {
+            max-width: 935px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 60px;
+            margin-bottom: 44px;
+            padding: 20px 0;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: 700;
+            border: 3px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-weight: 700;
+            font-size: 18px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .profile-bio {
+            margin-top: 20px;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .profile-username {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .profile-highlights {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .highlight {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .highlight-circle {
+            width: 77px;
+            height: 77px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .highlight-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .profile-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            border-top: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 16px 0;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-top: 1px solid transparent;
+            margin-top: -1px;
+        }
+
+        .tab.active {
+            color: var(--text-primary);
+            border-top-color: var(--text-primary);
+        }
+
+        .tab i {
+            margin-right: 6px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .post-item {
+            aspect-ratio: 1;
+            background: var(--card);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .post-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .post-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .post-item:hover .post-overlay {
+            opacity: 1;
+        }
+
+        .post-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+         <a href="/home" class="btn" style="text-decoration:none; padding:6px 10px; background:#eee; border-radius:6px; color:inherit;">◀ Back</a>
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.initials }}
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">{{ user.username or user.name }}</div>
+                <div class="profile-username">@{{ user.username }}</div>
+                
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span id="posts-count" class="stat-number">{{ user.posts|length or 0 }}</span>
+                        <span class="stat-label">Posts</span>
+                    </div>
+                    <div class="stat">
+                        <span id="followers-count" class="stat-number">{{ user.followers_count or 0 }}</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                    <div class="stat">
+                        <span id="following-count" class="stat-number">{{ user.following_count or 0 }}</span>
+                        <span class="stat-label">Following</span>
+                    </div>
+                </div>
+                
+                <div class="profile-bio">
+                    <p>{{ user.bio or 'No bio provided.' }}</p>
+                </div>
+                
+                <div class="profile-actions">
+                    {% if user.email != session_user_email %}
+                        <form action="{{ url_for('follow_toggle', user_email=user.email) }}" method="POST" style="display: inline;">
+                            {% if is_following %}
+                                <button type="submit" class="btn btn-secondary">Unfollow</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary">Follow</button>
+                            {% endif %}
+                        </form>
+                    {% else %}
+                        <a href="/set_username" class="btn btn-secondary">Edit Profile</a>
+                        <button id="shareProfileBtn" class="btn btn-secondary">Share Profile</button>
+                    {% endif %}
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-ellipsis"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Highlights removed (no user-provided highlights) -->
+
+        <!-- Profile Tabs -->
+        <div class="profile-tabs">
+            <div class="tab active">
+                <i class="fas fa-th"></i>
+                POSTS
+            </div>
+            <div class="tab">
+                <i class="fas fa-play-circle"></i>
+                REELS
+            </div>
+            <div class="tab">
+                <i class="fas fa-bookmark"></i>
+                SAVED
+            </div>
+            <div class="tab">
+                <i class="fas fa-user-tag"></i>
+                TAGGED
+            </div>
+        </div>
+
+        <!-- Posts Grid -->
+        <div class="posts-grid">
+            {% for p in user.posts %}
+            <div class="post-item">
+                <img src="{{ p.image_url or 'https://via.placeholder.com/400' }}" alt="Post">
+                <div class="post-overlay">
+                    <div class="post-stat">
+                        <i class="fas fa-heart"></i>
+                        {{ p.likes or 0 }}
+                    </div>
+                    <div class="post-stat">
+                        <i class="fas fa-comment"></i>
+                        {{ p.comments or 0 }}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p>No posts yet.</p>
+            {% endfor %}
+            
+            <!-- User Posts -->
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post-item">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center;">
+                        {{ post.content }}
+                    </div>
+                    <div class="post-overlay">
+                        <div class="post-stat">
+                            <i class="fas fa-heart"></i>
+                            156
+                        </div>
+                        <div class="post-stat">
+                            <i class="fas fa-comment"></i>
+                            23
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+
+    <script>
+        // Share profile button: copy current URL to clipboard
+        document.addEventListener('DOMContentLoaded', function(){
+            const btn = document.getElementById('shareProfileBtn');
+            if(btn){
+                btn.addEventListener('click', function(){
+                    const url = window.location.href;
+                    if(navigator.clipboard && navigator.clipboard.writeText){
+                        navigator.clipboard.writeText(url).then(()=>{
+                            alert('Profile URL copied to clipboard');
+                        }).catch(()=>{
+                            prompt('Copy this URL', url);
+                        });
+                    } else {
+                        prompt('Copy this URL', url);
+                    }
+                });
+            }
+        });
+
+        // Follow/Unfollow functionality (AJAX)
+        (function(){
+            const followForm = document.querySelector("form[action*='follow_toggle']");
+            if(!followForm) return;
+
+            followForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector("button");
+                const isFollowing = btn.textContent.trim().toLowerCase() === "unfollow";
+
+                try{
+                    const res = await fetch(isFollowing ? `/api/unfollow/{{ user.username }}` : `/api/follow/{{ user.username }}`, { 
+                        method: "POST", 
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if(!res.ok) throw new Error('Request failed');
+                    const data = await res.json();
+
+                    // data expected: { following: true|false, followers_count: N, following_count: M }
+                    if(typeof data.following !== 'undefined'){
+                        btn.textContent = data.following ? "Unfollow" : "Follow";
+                        btn.className = data.following ? "btn btn-secondary" : "btn btn-primary";
+                    }
+                    if(typeof data.followers_count !== 'undefined'){
+                        const el = document.getElementById('followers-count');
+                        if(el) el.textContent = data.followers_count;
+                    }
+                    if(typeof data.following_count !== 'undefined'){
+                        const el = document.getElementById('following-count');
+                        if(el) el.textContent = data.following_count;
+                    }
+                }
+                catch(err){
+                    console.error('Error:', err);
+                    alert('Could not update follow state.');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Following of {{ user_username }}</title></head>
+<body>
+  <h2>{{ user_username }} is following</h2>
+  {% if following %}
+    <ul>
+      {% for f in following %}
+        <li>
+          {% if f.avatar_url %}<img src="{{ f.avatar_url }}" style="width:36px;height:36px;border-radius:6px;vertical-align:middle;margin-right:8px">{% endif %}
+          <a href="/profile/{{ f.username }}">{{ f.username or f.name }}</a> ({{ f.email }})
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Not following anyone yet.</p>
+  {% endif %}
+</body>
+</html>

@@ -1,202 +1,277 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Peronoid - High Tech Game</title>
-  <style>
-    body {
-      background: #0f0f0f;
-      color: #fff;
-      font-family: monospace;
-      text-align: center;
-    }
-
-    canvas {
-      background: #111;
-      display: block;
-      margin: 20px auto;
-      border: 3px solid #0ff;
-      box-shadow: 0 0 20px #0ff;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>XYA-09 — Chat</title>
+<style>
+/* ------------------------- Base styles (reuse from main demo) ------------------------- */
+:root{
+  --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --text:#111827;
+  --accent:#1d4ed8; --glass: rgba(255,255,255,0.6); --radius:12px;
+  --shadow: 0 6px 18px rgba(16,24,40,0.06); --max-width:1100px;
+}
+[data-theme="dark"]{
+  --bg:#0b1020; --card:#0f1724; --muted:#9aa4b2; --text:#e6eef6;
+  --accent:#60a5fa; --glass: rgba(255,255,255,0.03);
+  --shadow: 0 8px 30px rgba(2,6,23,0.8);
+}
+body{margin:0; font-family:Inter, sans-serif; background:var(--bg); color:var(--text); display:flex; justify-content:center; padding:20px; height:100vh;}
+.app{width:100%; max-width:var(--max-width); display:flex; gap:20px; height:100%;}
+.left{width:200px; display:flex; flex-direction:column; gap:12px;}
+.left h2{font-size:20px; font-weight:700; margin:0;}
+.chat-list{flex:1; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:auto;}
+.chat-item{display:flex; gap:10px; align-items:center; cursor:pointer; padding:8px; border-bottom:1px solid rgba(0,0,0,0.05);}
+.chat-item:hover{background:var(--glass);}
+.chat-item .avatar-sm{width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--accent),#7c3aed); color:white; display:grid; place-items:center; font-weight:700;}
+.chat-item .info{flex:1;}
+.chat-item .info .title{font-weight:700;}
+.chat-item .info .last-msg{font-size:12px; color:var(--muted);}
+.chat-window{flex:1; display:flex; flex-direction:column; gap:8px;}
+.chat-window-header{display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:12px; border-radius:var(--radius); box-shadow:var(--shadow);}
+.chat-window-header .title{font-weight:700;}
+.chat-window-messages{flex:1; overflow:auto; display:flex; flex-direction:column; gap:8px; padding:12px; background:var(--bg); border-radius:var(--radius);}
+.msg{max-width:70%; padding:10px; border-radius:12px; background:var(--glass);}
+.msg.me{align-self:flex-end; background:linear-gradient(90deg,var(--accent),#7c3aed); color:white;}
+.message-block{display:flex; flex-direction:column; gap:4px;}
+.message-block .username{font-size:12px; color:var(--muted); font-weight:600;}
+.msg .text{white-space:pre-wrap}
+.sendbox{display:flex; gap:8px; padding:8px;}
+.sendbox input{flex:1; padding:8px 10px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); outline:0;}
+.sendbox button{background:var(--accent); color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;}
+</style>
 </head>
 <body>
-  <h1>💥 PERONOID 💥</h1>
-  <canvas id="gameCanvas" width="480" height="320"></canvas>
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+<div id="app" class="app" data-theme="light">
+  <!-- LEFT: Chat list -->
+  <div class="left">
+    <h2>Chats</h2>
+    <div style="display:flex; gap:8px; padding:8px;">
+      <button id="loadContacts">Load followers/following</button>
+      <input id="contactSearch" placeholder="Search contacts" style="flex:1;padding:6px;border-radius:6px;border:1px solid rgba(0,0,0,0.06)" />
+    </div>
+    <div class="chat-list" id="chatList"></div>
+  </div>
 
-    // Ball
-    let x = canvas.width / 2;
-    let y = canvas.height - 30;
-    let dx = 2;
-    let dy = -2;
-    let ballRadius = 10;
+  <!-- RIGHT: Chat window -->
+  <div class="chat-window">
+    <div class="chat-window-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <a href="/home" class="btn" style="text-decoration:none; padding:6px 10px; background:#eee; border-radius:6px; color:inherit;">◀ Back</a>
+          <div class="title" id="chatWindowTitle">Select a chat</div>
+        </div>
+      <button id="themeToggle">🌙</button>
+    </div>
+    <div class="chat-window-messages" id="chatWindowMessages"></div>
+    <div class="sendbox">
+      <input id="chatWindowInput" placeholder="Type a message..." />
+      <button id="chatWindowSend">Send</button>
+    </div>
+  </div>
+</div>
 
-    // Paddle
-    const paddleHeight = 10;
-    const paddleWidth = 75;
-    let paddleX = (canvas.width - paddleWidth) / 2;
-    let rightPressed = false;
-    let leftPressed = false;
+<script>
+/* ======= Shared state with main demo (localStorage) ======= */
+const STORAGE_KEY = "xya09_demo_v1";
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+state.users = state.users || [];
+state.chats = state.chats || [];
+state.contacts = state.contacts || [];
 
-    // Bricks
-    const brickRowCount = 4;
-    const brickColumnCount = 6;
-    const brickWidth = 60;
-    const brickHeight = 20;
-    const brickPadding = 10;
-    const brickOffsetTop = 30;
-    const brickOffsetLeft = 35;
+/* Utilities */
+function findUser(u){
+  if(!u) return state.me || {name:'Unknown'};
+  // try contacts (email key)
+  const byContact = (state.contacts||[]).find(x => x.email === u || x.id === u || x.username === u);
+  if(byContact) return byContact;
+  // try users array
+  const byUser = (state.users||[]).find(x => x.id === u || x.email === u || x.username === u);
+  if(byUser) return byUser;
+  // fallback to the current signed-in user
+  if(state.me && (state.me.id === u || state.me.email === u)) return state.me;
+  return {name: u, email: u};
+}
 
-    let bricks = [];
-    for (let c = 0; c < brickColumnCount; c++) {
-      bricks[c] = [];
-      for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0, status: 1 };
-      }
+// initialize current user from server session so we can identify "me"
+async function initCurrentUser(){
+  try{
+    const r = await fetch('/debug-session');
+    if(!r.ok) return;
+    const data = await r.json();
+    if(data && data.db_row_for_email){
+      // db_row_for_email is [id, name, email, username]
+      const row = data.db_row_for_email;
+      const email = row[2];
+      const name = row[1] || row[3] || email;
+      state.me = state.me || {};
+      state.me.id = email; // use email as unique id
+      state.me.email = email;
+      state.me.name = name;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+  }catch(e){
+    // ignore; user may not be signed in
+    console.debug('initCurrentUser failed', e);
+  }
+}
+
+/* Render chat list */
+const chatListEl = document.getElementById('chatList');
+const chatWindowTitle = document.getElementById('chatWindowTitle');
+const chatWindowMessages = document.getElementById('chatWindowMessages');
+const chatWindowInput = document.getElementById('chatWindowInput');
+const chatWindowSend = document.getElementById('chatWindowSend');
+
+let activeChatId = null;
+
+function renderChatList(){
+  chatListEl.innerHTML = '';
+  // If contacts are available, render them first
+  if(state.contacts && state.contacts.length){
+    state.contacts.forEach(c=>{
+      const div = document.createElement('div');
+      div.className='chat-item';
+      div.innerHTML = `<div class="avatar-sm">${(c.name||c.username||c.email)[0].toUpperCase()}</div>
+                       <div class="info">
+                         <div class="title">${c.name || c.username || c.email}</div>
+                         <div class="last-msg"></div>
+                       </div>`;
+      div.onclick = ()=> startChatWithContact(c);
+      chatListEl.appendChild(div);
+    });
+    // separator
+    const hr = document.createElement('hr'); hr.style.margin='6px 0'; chatListEl.appendChild(hr);
+  }
+  state.chats.forEach(c=>{
+    const div = document.createElement('div');
+    div.className='chat-item';
+    div.innerHTML = `<div class="avatar-sm">${c.title[0].toUpperCase()}</div>
+                     <div class="info">
+                       <div class="title">${c.title}</div>
+                       <div class="last-msg">${c.messages[c.messages.length-1]?.text || ''}</div>
+                     </div>
+                     <div class="small">${c.unread?c.unread:''}</div>`;
+    div.onclick = ()=> openChat(c.id);
+    chatListEl.appendChild(div);
+  });
+}
+
+function startChatWithContact(contact){
+  // If chat already exists with this contact, open it; else create a new chat
+  let chat = state.chats.find(x=> x.partners && x.partners.includes(contact.email));
+  if(!chat){
+    chat = { id: 'chat_' + Date.now(), title: contact.name || contact.username || contact.email, partners: [contact.email], messages: [], unread:0 };
+    state.chats.unshift(chat);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  openChat(chat.id);
+}
+
+/* Open chat window */
+function openChat(chatId){
+  activeChatId = chatId;
+  const chat = state.chats.find(c=>c.id===chatId);
+  if(!chat) return;
+  chat.unread = 0;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  renderChatList();
+  chatWindowTitle.textContent = chat.title;
+  renderMessages(chat);
+}
+
+/* Render chat messages */
+function renderMessages(chat){
+  chatWindowMessages.innerHTML = '';
+  chat.messages.forEach(m=>{
+    const block = document.createElement('div');
+    block.className = 'message-block';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'username';
+    const user = findUser(m.from) || {name: m.from};
+    nameEl.textContent = user.name || user.username || user.email || 'Unknown';
+
+    const div = document.createElement('div');
+    div.className = 'msg ' + (m.from===state.me.id?'me':'');
+    const textSpan = document.createElement('div');
+    textSpan.className = 'text';
+    textSpan.textContent = m.text;
+    div.appendChild(textSpan);
+
+    // align block: sent messages align to right
+    if(m.from===state.me.id){
+      block.style.alignItems = 'flex-end';
+    } else {
+      block.style.alignItems = 'flex-start';
     }
 
-    let score = 0;
-    let lives = 3;
+    block.appendChild(nameEl);
+    block.appendChild(div);
+    chatWindowMessages.appendChild(block);
+  });
+  chatWindowMessages.scrollTop = chatWindowMessages.scrollHeight;
+}
 
-    document.addEventListener("keydown", keyDownHandler);
-    document.addEventListener("keyup", keyUpHandler);
+/* Send message */
+function sendMessage(){
+  if(!activeChatId) return;
+  const txt = chatWindowInput.value.trim();
+  if(!txt) return;
+  const chat = state.chats.find(c=>c.id===activeChatId);
+  const fromId = (state.me && state.me.id) ? state.me.id : (state.me && state.me.email) || 'me';
+  chat.messages.push({from:fromId, text:txt, ts:Date.now()});
+  chatWindowInput.value='';
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  renderMessages(chat);
+  renderChatList();
+}
 
-    function keyDownHandler(e) {
-      if (e.key === "Right" || e.key === "ArrowRight") {
-        rightPressed = true;
-      } else if (e.key === "Left" || e.key === "ArrowLeft") {
-        leftPressed = true;
-      }
-    }
+chatWindowSend.onclick = sendMessage;
+chatWindowInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage(); });
 
-    function keyUpHandler(e) {
-      if (e.key === "Right" || e.key === "ArrowRight") {
-        rightPressed = false;
-      } else if (e.key === "Left" || e.key === "ArrowLeft") {
-        leftPressed = false;
-      }
-    }
+/* Theme toggle */
+document.getElementById('themeToggle').onclick = ()=>{
+  const cur = document.getElementById('app').getAttribute('data-theme')||'light';
+  document.getElementById('app').setAttribute('data-theme', cur==='light'?'dark':'light');
+};
 
-    function drawBall() {
-      ctx.beginPath();
-      ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-      ctx.fillStyle = "#00ff99";
-      ctx.fill();
-      ctx.closePath();
-    }
+/* Initial render */
+initCurrentUser().then(()=>{
+  renderChatList();
+});
 
-    function drawPaddle() {
-      ctx.beginPath();
-      ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-      ctx.fillStyle = "#0095DD";
-      ctx.fill();
-      ctx.closePath();
-    }
+/* Load contacts from server (followers + following) */
+document.getElementById('loadContacts').onclick = async ()=>{
+  try{
+    const res = await fetch('/api/chat_contacts');
+    if(!res.ok) throw new Error('Failed to load contacts');
+    const data = await res.json();
+    state.contacts = data.contacts || [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    renderChatList();
+  }catch(e){
+    alert('Could not load contacts: '+e.message);
+  }
+}
 
-    function drawBricks() {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          if (bricks[c][r].status === 1) {
-            let brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-            let brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "#ff3366";
-            ctx.fill();
-            ctx.closePath();
-          }
-        }
-      }
-    }
-
-    function collisionDetection() {
-      for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-          const b = bricks[c][r];
-          if (b.status === 1) {
-            if (
-              x > b.x &&
-              x < b.x + brickWidth &&
-              y > b.y &&
-              y < b.y + brickHeight
-            ) {
-              dy = -dy;
-              b.status = 0;
-              score++;
-              dx *= 1.007; // 0.7% increase
-              dy *= 1.007;
-              if (score === brickRowCount * brickColumnCount) {
-                alert("🎉 YOU WIN! 🎉");
-                document.location.reload();
-              }
-            }
-          }
-        }
-      }
-    }
-
-    function drawScore() {
-      ctx.font = "16px monospace";
-      ctx.fillStyle = "#0ff";
-      ctx.fillText("Score: " + score, 8, 20);
-    }
-
-    function drawLives() {
-      ctx.font = "16px monospace";
-      ctx.fillStyle = "#f00";
-      ctx.fillText("Lives: " + lives, canvas.width - 80, 20);
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawBricks();
-      drawBall();
-      drawPaddle();
-      drawScore();
-      drawLives();
-      collisionDetection();
-
-      if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-        dx = -dx;
-      }
-      if (y + dy < ballRadius) {
-        dy = -dy;
-      } else if (y + dy > canvas.height - ballRadius) {
-        if (x > paddleX && x < paddleX + paddleWidth) {
-          dy = -dy;
-        } else {
-          lives--;
-          if (!lives) {
-            alert("💀 Game Over 💀");
-            document.location.reload();
-          } else {
-            x = canvas.width / 2;
-            y = canvas.height - 30;
-            dx = 2;
-            dy = -2;
-            paddleX = (canvas.width - paddleWidth) / 2;
-          }
-        }
-      }
-
-      if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 7;
-      } else if (leftPressed && paddleX > 0) {
-        paddleX -= 7;
-      }
-
-      x += dx;
-      y += dy;
-
-      requestAnimationFrame(draw);
-    }
-
-    draw();
-  </script>
+/* Simple contact search */
+document.getElementById('contactSearch').addEventListener('input', function(){
+  const q = this.value.trim().toLowerCase();
+  if(!q){ renderChatList(); return; }
+  // filter contacts
+  const filtered = (state.contacts||[]).filter(c=> (c.name||c.username||c.email||'').toLowerCase().includes(q));
+  chatListEl.innerHTML='';
+  filtered.forEach(c=>{
+    const div = document.createElement('div');
+    div.className='chat-item';
+    div.innerHTML = `<div class="avatar-sm">${(c.name||c.username||c.email)[0].toUpperCase()}</div>
+                     <div class="info">
+                       <div class="title">${c.name || c.username || c.email}</div>
+                       <div class="last-msg"></div>
+                     </div>`;
+    div.onclick = ()=> startChatWithContact(c);
+    chatListEl.appendChild(div);
+  });
+});
+</script>
 </body>
 </html>

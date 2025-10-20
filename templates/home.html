@@ -3,49 +3,1112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xia-09</title>
+    <title>SocialSphere - Your Social World</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .container{
-            background-color: brown;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100px;
+        :root {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --background: #ffffff;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        *{
+        [data-theme="dark"] {
+            --background: #0f0f0f;
+            --surface: #1a1a1a;
+            --card: #262626;
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: #374151;
+            --border-light: #2d3748;
+        }
+
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr 380px;
+            gap: 0;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            padding: 32px 24px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 32px;
+            padding: 0 12px;
+        }
+        .nav-link {
+  display: block;
+  padding: 12px 18px;
+  margin: 4px 0;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: var(--transition);
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+}
+
+.nav-link:hover {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: var(--border-light);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-link i {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-link .badge {
+            position: absolute;
+            right: 16px;
+            background: var(--primary);
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            grid-column: 2;
+            padding: 32px;
+            margin-left: 320px; /* leave room for left sidebar */
+            margin-right: 420px; /* leave room for right sidebar */
+        }
+
+        .stories-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .stories {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 80px;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 3px;
+            position: relative;
+        }
+
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid var(--card);
+            object-fit: cover;
+        }
+
+        .story-avatar.live::after {
+            content: 'LIVE';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .story-username {
+            font-size: 12px;
+            color: var(--text-secondary);
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Create Post */
+        .create-post {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .post-input {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .post-input .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .post-input input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .post-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .post-action:hover {
+            background: var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .post-action i {
+            font-size: 18px;
+        }
+
+        /* Feed */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .post {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .post-user {
+            flex: 1;
+        }
+
+        .post-username {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .post-more {
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .post-more:hover {
+            background: var(--border-light);
+        }
+
+        .post-content {
+            padding: 0;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: cover;
+        }
+
+        .post-actions-bar {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-actions-left {
+            display: flex;
+            gap: 16px;
+        }
+
+        .post-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .post-action-btn:hover {
+            color: var(--text-primary);
+            background: var(--border-light);
+        }
+
+        .post-action-btn.active {
+            color: var(--primary);
+        }
+
+        .post-stats {
+            padding: 0 20px 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .post-caption {
+            padding: 0 20px 16px;
+        }
+
+        .post-caption .username {
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        .post-comments {
+            padding: 0 20px 16px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px;
+        }
+
+        .add-comment {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding-top: 12px;
+        }
+
+        .add-comment input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .add-comment input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 380px;
+            height: 100vh;
+            padding: 32px 24px;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .profile-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .profile-bio {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-weight: 700;
+            font-size: 16px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .edit-profile-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--border-light);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .edit-profile-btn:hover {
+            background: var(--border);
+        }
+
+        .suggestions {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .suggestions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .suggestions-title {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .see-all {
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .suggestion {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .suggestion-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .suggestion-info {
+            flex: 1;
+        }
+
+        .suggestion-username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .suggestion-bio {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .follow-btn {
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 12px 20px;
+            z-index: 50;
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 10px;
+        }
+
+        .mobile-nav-link.active {
+            color: var(--primary);
+        }
+
+        .mobile-nav-link i {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+            .nav-sidebar {
+                transform: translateX(-100%);
+            }
+            .right-sidebar {
+                transform: translateX(100%);
+            }
+            .main-content {
+                margin-left: 0;
+                grid-column: 1;
+            }
+            .mobile-nav {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+            .post-actions-bar {
+                padding: 12px 16px;
+            }
+            .create-post {
+                padding: 16px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .post {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        .ai-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.ai-button:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+  /* Hide header by default (desktop) */
+.mobile-header {
+  display: none;
+}
+
+/* Show header and position elements in mobile view */
+/* --- TOP BAR --- */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+.topbar-left .logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chat-icon {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.chat-icon:hover {
+  color: var(--primary);
+}
+
+.theme-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Adjust layout so topbar doesn’t cover content */
+body {
+  padding-top: 70px;
+}
+
+
     </style>
 </head>
-<body style="background-color: antiquewhite;">
+<body data-theme="light">
+  <header class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SocialSphere</div>
+  </div>
 
-    <div class="container">
-            <nav>
-                <input type="button" value="Home" style="font-size: 25px;text-decoration: brown;">
-                <input type="button" value="About Me" style="font-size: 25px; text-decoration: brown;">
-                <input type="button" value="Contact" style="font-size: 25px; text-decoration: brown;">
-            </nav>
+  <div class="topbar-right">
+    <a href="/chat" class="chat-icon">
+      <i class="fas fa-envelope"></i>
+    </a>
+    <button id="theme-toggle" class="theme-btn">🌙</button>
+  </div>
+</header>
+
+    <div class="app">
+        <!-- Navigation Sidebar -->
+        <nav class="nav-sidebar">
+            <div class="logo">SocialSphere</div>
+            <!-- Main Navigation -->
+<div class="navigation">
+    <a href="/home" class="nav-link ai-button">Home</a>
+    <a href="/feed" class="nav-link ai-button">Feed</a>
+    <a href="/explore" class="nav-link ai-button">Explore</a>
+    <a href="/chat" class="nav-link ai-button">Messages</a>
+    <!-- AI Button added below Messages -->
+    <a href="/AI-home" class="nav-item ai-button">🤖 AI Assistant</a>
+    <a href="/notifications" class="nav-link ai-button">Notifications</a>
+    <a href="/create" class="nav-link ai-button">Create</a>
+</div>
+
+<!-- Profile & Settings -->
+<div class="profile-section">
+    <a href="/me" class="nav-link ai-button">My Profile</a>
+    <a href="/settings" class="nav-link ai-button" onclick="settings()">Settings</a>
+</div>
+
+<!-- Games Section -->
+<a href="/game" class="nav-link ai-button">
+    <i class="fas fa-gamepad"></i> Tic Tac Toe
+</a>
+<a href="/perenoid" class="nav-link ai-button">
+    <i class="fas fa-user-secret"></i> Perenoid
+</a>
+
+
+<!-- Auth Section -->
+<div class="auth-section">
+    {% if session.user %}
+        <a href="/logout" class="nav-link ai-button">Logout</a>
+    {% else %}
+        <a href="/signin" class="nav-link ai-button">Sign In</a>
+        <a href="/signup" class="nav-link ai-button">Sign Up</a>
+    {% endif %}
+</div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stories -->
+            <div class="stories-container">
+                <div class="stories">
+                    <!-- Your Story -->
+                    <div class="story">
+                        <div class="story-avatar">
+                            <div style="width: 100%; height: 100%; border-radius: 50%; background: var(--border-light); display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </div>
+                        <div class="story-username">Your Story</div>
+                    </div>
+                    
+                    <!-- Stories from DB users -->
+                    {% for u in stories %}
+                    <div class="story">
+                        <div class="story-avatar">
+                            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(45deg, #a18cd1, #fbc2eb); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">{{ (u.username or u.name or u.email)[0:1]|upper }}</div>
+                        </div>
+                        <div class="story-username">{{ u.username or u.name }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Create Post -->
+            <div class="create-post">
+                <div class="post-input">
+                    <div class="avatar">{{ avatar_text }}</div>
+                    <input type="text" placeholder="What's on your mind, {{ username }}?">
+                </div>
+                <div class="post-actions">
+                    <div class="post-action">
+                        <i class="fas fa-image" style="color: #45bd62;"></i>
+                        <span>Photo</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-video" style="color: #f5533d;"></i>
+                        <span>Video</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-smile" style="color: #f7b928;"></i>
+                        <span>Feeling</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed -->
+            <div class="feed">
+                <!-- Sample Post 1 -->
+                <div class="post">
+                    <div class="post-header">
+                        <div class="post-avatar" style="background: linear-gradient(45deg, #ff6b6b, #ffa726);">S</div>
+                        <div class="post-user">
+                            <div class="post-username">sarah_m</div>
+                            <div class="post-time">2 hours ago · <i class="fas fa-globe-americas"></i></div>
+                        </div>
+                        <div class="post-more">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p style="padding: 0 20px 16px; color: var(--text-primary);">Beautiful sunset at the beach today! 🌅 #sunset #beach #vacation</p>
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Sunset" class="post-image">
+                    </div>
+                    <div class="post-stats">
+                        2,344 likes · 128 comments
+                    </div>
+                    <div class="post-actions-bar">
+                        <div class="post-actions-left">
+                            <div class="post-action-btn">
+                                <i class="far fa-heart"></i>
+                                <span>Like</span>
+                            </div>
+                            <div class="post-action-btn">
+                                <i class="far fa-comment"></i>
+                                <span>Comment</span>
+                            </div>
+                            <div class="post-action-btn">
+                                <i class="far fa-share-square"></i>
+                                <span>Share</span>
+                            </div>
+                        </div>
+                        <div class="post-action-btn">
+                            <i class="far fa-bookmark"></i>
+                        </div>
+                    </div>
+                    <div class="post-comments">
+                        <div class="add-comment">
+                            <div class="post-avatar" style="width: 32px; height: 32px; font-size: 14px;">{{ avatar_text }}</div>
+                            <input type="text" placeholder="Add a comment...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Post 2 -->
+                <div class="post">
+                    <div class="post-header">
+                        <div class="post-avatar" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">A</div>
+                        <div class="post-user">
+                            <div class="post-username">alex_j</div>
+                            <div class="post-time">5 hours ago · <i class="fas fa-globe-americas"></i></div>
+                        </div>
+                        <div class="post-more">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <p style="padding: 0 20px 16px; color: var(--text-primary);">Just launched my new website! Check it out and let me know what you think. 🚀 #webdev #coding #portfolio</p>
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Coding" class="post-image">
+                    </div>
+                    <div class="post-stats">
+                        1,892 likes · 84 comments
+                    </div>
+                    <div class="post-actions-bar">
+                        <div class="post-actions-left">
+                            <div class="post-action-btn">
+                                <i class="far fa-heart"></i>
+                                <span>Like</span>
+                            </div>
+                            <div class="post-action-btn">
+                                <i class="far fa-comment"></i>
+                                <span>Comment</span>
+                            </div>
+                            <div class="post-action-btn">
+                                <i class="far fa-share-square"></i>
+                                <span>Share</span>
+                            </div>
+                        </div>
+                        <div class="post-action-btn">
+                            <i class="far fa-bookmark"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right sidebar removed; profile card and suggestions moved to separate profile page -->
+
+        <!-- Mobile Navigation -->
+         <header class="mobile-header">
+  <div class="mobile-left">
+    <div class="logo">SocialSphere</div>
+  </div>
+
+  <div class="mobile-right">
+    <a href="/chat" class="chat-icon">
+      <i class="fas fa-envelope"></i>
+    </a>
+    <button id="theme-toggle" class="theme-btn">🌙</button>
+  </div>
+</header>
+
+        <nav class="mobile-nav">
+            <div class="mobile-nav-links">
+                <a href="#" class="mobile-nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-plus-square"></i>
+                    <span>Create</span>
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-heart"></i>
+                    <span>Activity</span>
+                </a>
+                <a href="/me" class="mobile-nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Theme Toggle -->
+        <div class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>
+
+    <script>
+      
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const app = document.querySelector('.app');
         
-    </div>
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = app.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            app.setAttribute('data-theme', newTheme);
+            themeToggle.innerHTML = newTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        });
 
+        // Like functionality
+        document.querySelectorAll('.post-action-btn .fa-heart').forEach(heart => {
+            heart.addEventListener('click', function() {
+                this.classList.toggle('far');
+                this.classList.toggle('fas');
+                this.classList.toggle('active');
+                this.style.color = this.classList.contains('fas') ? '#ec4899' : '';
+            });
+        });
 
-    <div style="background-color:gold ;">
-        <p style="text-decoration: red; font-size: 40px; text-align: center;">Welcome To Xia-09's Corner</p>
-    </div> 
-    <p style="font-size: 30px; text-align: center;">Choose Any Game </p>
-    <div>
-        <img src="{{ url_for('static', filename='Perenoid.png') }}" width="600px">
-        <br>
-        <input type="button" onclick="window.location.href='/perenoid'" value="Perenoid" style="font-size: 20px;">
-    </div>
-         <img src="{{ url_for('static', filename='ziaai.png') }}" width="600px">
-        <br>
-        <input type="button" onclick="window.location.href='/AI-home'" value="AI" style="font-size: 20px;">
-   
+        // Mobile navigation active state
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.mobile-nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
 
-        <input type="button" onclick="window.location.href='game'" value="gamr" style="font-size: 20px;">
+        // Simulate loading new posts
+        setTimeout(() => {
+            const feed = document.querySelector('.feed');
+            const newPost = document.createElement('div');
+            newPost.className = 'post';
+            newPost.innerHTML = `
+                <div class="post-header">
+                    <div class="post-avatar" style="background: linear-gradient(45deg, #a18cd1, #fbc2eb);">L</div>
+                    <div class="post-user">
+                        <div class="post-username">lisa_k</div>
+                        <div class="post-time">Just now · <i class="fas fa-globe-americas"></i></div>
+                    </div>
+                    <div class="post-more">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p style="padding: 0 20px 16px; color: var(--text-primary);">Morning coffee and coding session! ☕️ #developer #coding #morningvibes</p>
+                    <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Coding" class="post-image">
+                </div>
+                <div class="post-stats">
+                    0 likes · 0 comments
+                </div>
+                <div class="post-actions-bar">
+                    <div class="post-actions-left">
+                        <div class="post-action-btn">
+                            <i class="far fa-heart"></i>
+                            <span>Like</span>
+                        </div>
+                        <div class="post-action-btn">
+                            <i class="far fa-comment"></i>
+                            <span>Comment</span>
+                        </div>
+                        <div class="post-action-btn">
+                            <i class="far fa-share-square"></i>
+                            <span>Share</span>
+                        </div>
+                    </div>
+                    <div class="post-action-btn">
+                        <i class="far fa-bookmark"></i>
+                    </div>
+                </div>
+            `;
+            feed.prepend(newPost);
+        }, 3000);
+    </script>
 </body>
 </html>
