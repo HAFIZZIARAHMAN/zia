@@ -733,6 +733,10 @@ def api_unfollow(username):
 
 @app.before_request
 def check_username():
+    # Skip for these endpoints to avoid infinite redirects
+    if request.endpoint in ['set_username', 'signin', 'signup', 'static', 'logout']:
+        return
+    
     if 'user_email' in session:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
@@ -740,8 +744,8 @@ def check_username():
         result = c.fetchone()
         conn.close()
 
-        # If no username and user isn't on the set_username page already
-        if (not result or not result[0]) and request.endpoint != 'set_username':
+        # If no username exists, redirect to set_username
+        if not result or not result[0]:
             return redirect(url_for('set_username'))
 
 
@@ -803,9 +807,7 @@ chats = {
 def index():
     return render_template('chat.html')
 
-@app.route('/chat')
-def chat_page():
-    return render_template('chat.html')
+
 
 
 @app.route('/explore')
