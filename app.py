@@ -1,11 +1,6 @@
 from datetime import datetime, timedelta
 import jinja2
 
-# Add custom filters
-app.jinja_env.filters['date'] = lambda s, format='%Y-%m-%d', years=0: (
-    (datetime.now() + timedelta(days=years*365)).strftime(format) if not s 
-    else datetime.strptime(s, '%Y-%m-%d').strftime(format)
-)
 import os
 from flask import Flask, request, redirect, url_for, session, render_template
 from flask import Flask, request, render_template, redirect, url_for, session
@@ -34,6 +29,11 @@ app.secret_key = "secret123"
 socketio = SocketIO(app)
 
 
+# Add custom filters
+app.jinja_env.filters['date'] = lambda s, format='%Y-%m-%d', years=0: (
+    (datetime.now() + timedelta(days=years*365)).strftime(format) if not s 
+    else datetime.strptime(s, '%Y-%m-%d').strftime(format)
+)
 
 
 
