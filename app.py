@@ -1,3 +1,11 @@
+from datetime import datetime, timedelta
+import jinja2
+
+# Add custom filters
+app.jinja_env.filters['date'] = lambda s, format='%Y-%m-%d', years=0: (
+    (datetime.now() + timedelta(days=years*365)).strftime(format) if not s 
+    else datetime.strptime(s, '%Y-%m-%d').strftime(format)
+)
 import os
 from flask import Flask, request, redirect, url_for, session, render_template
 from flask import Flask, request, render_template, redirect, url_for, session
@@ -639,8 +647,8 @@ def api_profile(username):
         conn.close()
 
 
-@app.route('/me_profile')
-def me_profile():
+@app.route('/i_profile')
+def i_profile():
     # Redirect current signed-in user to their profile based on username in DB, or to username setup
     if 'user_email' not in session:
         return redirect(url_for('signin'))
@@ -1028,10 +1036,6 @@ def perenoid():
     return render_template("perenoid.html")
 
 
-@app.route('/me')
-def me_alias():
-    # lightweight alias so clients can try /me as well
-    return redirect(url_for('me_profile'))
 
 
 @app.route('/_routes')
@@ -1134,9 +1138,7 @@ def generate_code(length=5):
 def lobby():
     return render_template("index.html")   # Lobby (create/join)
 
-@app.route("/game")
-def game():
-    return render_template("game.html")   # Board UI
+  # Board UI
 
   
 
@@ -1512,25 +1514,14 @@ def handle_message(data):
 
 
 
-@app.route("/explore")
-def explore():
-    return render_template("explore.html")
 
 
-@app.route("/notifications")
-def notifications():
-    return render_template("notifications.html")
+
+
 from flask import redirect, url_for, session
 
-@app.route("/settings")
-def settings():
-    if 'user_email' not in session:
-        return redirect(url_for('signin'))
-    return render_template("settings.html")
 
-@app.route("/create")
-def create():
-    return render_template("create.html")
+
 @app.route("/me")
 def me_profile():   
     if 'user_email' not in session:
@@ -1545,24 +1536,19 @@ def me_profile():
     email = r[1] if r else user_email
     username = r[2] if r and r[2] else 'No username set'
     return render_template('profile.html', name=name, email=email, username=username)
-@app.route("/home")
-def home():
-    return render_template("home.html")
 
-@app.route("/feed")
-def feed():
-    return render_template("feed.html")
+
+
 
 @app.route("/game")
 def game():
     return render_template("game.html")
 
-@app.route("/perenoid")
-def perenoid():
-    return render_template("perenoid.html")
 
 
 
+
+# ---------- Run ----------
 
 # ---------- Run ----------
 if __name__ == "__main__":
@@ -1571,47 +1557,11 @@ if __name__ == "__main__":
     # Disable Flask's reloader when running SocketIO to avoid binding the same port twice
     socketio.run(app, host="0.0.0.0", port=port, debug=True, use_reloader=False)
 
-import requests
+    from datetime import datetime, timedelta
 
-BASE = 'http://127.0.0.1:5000'
-
-print('Testing /search_users?q=demo')
-try:
-    r = requests.get(BASE + '/search_users', params={'q':'demo'}, timeout=5)
-    print(r.status_code, r.headers.get('content-type'))
-    print(r.text[:1000])
-    data = r.json()
-    print('Returned items:', len(data))
-    if data:
-        first = data[0]
-        username = first.get('username') or first.get('name')
-        print('Testing /api/profile for', username)
-        r2 = requests.get(BASE + '/api/profile/' + str(username))
-        print(r2.status_code)
-        print(r2.text)
-except Exception as e:
-    print('Error:', e)
-
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from app import update_db_structure
-print('Running update_db_structure()...')
-try:
-    update_db_structure()
-    print('update_db_structure completed.')
-except Exception as e:
-    print('update_db_structure failed:', e)
-
-import sys, os, traceback
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-from app import app
-
-username = 'hiimzia'
-
-with app.test_request_context(f'/api/profile/{username}'):
-    try:
-        rv = app.view_functions['api_profile'](username)
-        print('Returned:', rv)
-    except Exception:
-        print('Exception during api_profile:')
-        traceback.print_exc()
+# Custom Jinja2 filters
+@app.template_filter('date')
+def custom_date_filter(dummy, format_string='%Y-%m-%d', years_offset=0):
+    """Handle the date filter used in templates"""
+    target_date = datetime.now() + timedelta(days=years_offset * 365)
+    return target_date.strftime(format_string)

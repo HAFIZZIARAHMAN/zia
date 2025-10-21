@@ -50,13 +50,14 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            padding-top: 0;
         }
 
         .app {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 280px 1fr 380px;
+            grid-template-columns: 280px 1fr;
             gap: 0;
             min-height: 100vh;
         }
@@ -86,24 +87,24 @@
             margin-bottom: 32px;
             padding: 0 12px;
         }
+
         .nav-link {
-  display: block;
-  padding: 12px 18px;
-  margin: 4px 0;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 500;
-  color: var(--text-primary);
-  transition: var(--transition);
-  background: var(--bg);
-  border: 1px solid var(--border-light);
-}
+            display: block;
+            padding: 12px 18px;
+            margin: 4px 0;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: var(--transition);
+            background: var(--card);
+            border: 1px solid var(--border-light);
+        }
 
-.nav-link:hover {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: white;
-}
-
+        .nav-link:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
 
         .nav-links {
             display: flex;
@@ -142,24 +143,57 @@
             text-align: center;
         }
 
-        .nav-link .badge {
-            position: absolute;
-            right: 16px;
-            background: var(--primary);
-            color: white;
-            font-size: 12px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 18px;
-            text-align: center;
-        }
-
-        /* Main Content */
+        /* Main Content - Centered */
         .main-content {
             grid-column: 2;
             padding: 32px;
-            margin-left: 320px; /* leave room for left sidebar */
-            margin-right: 420px; /* leave room for right sidebar */
+            margin-left: 280px;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 12px 20px;
+            transition: var(--transition);
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+        }
+
+        .search-bar i {
+            color: var(--text-muted);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-muted);
         }
 
         .stories-container {
@@ -445,158 +479,65 @@
             border-color: var(--primary);
         }
 
-        /* Right Sidebar */
-        .right-sidebar {
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
             position: fixed;
-            right: 0;
             top: 0;
-            width: 380px;
-            height: 100vh;
-            padding: 32px 24px;
-            background: var(--surface);
-            border-left: 1px solid var(--border);
-            overflow-y: auto;
-        }
-
-        .profile-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 20px;
-            text-align: center;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 auto 16px;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .profile-name {
-            font-weight: 700;
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-
-        .profile-bio {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 16px;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-weight: 700;
-            font-size: 16px;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .edit-profile-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--border-light);
-            border: none;
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .edit-profile-btn:hover {
-            background: var(--border);
-        }
-
-        .suggestions {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-
-        .suggestions-header {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: var(--shadow);
         }
 
-        .suggestions-title {
-            font-weight: 600;
-            color: var(--text-muted);
+        .mobile-left .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            color: transparent;
         }
 
-        .see-all {
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .suggestion {
+        .mobile-right {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 8px 0;
+            gap: 16px;
         }
 
-        .suggestion-avatar {
+        .chat-icon {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            position: relative;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .chat-icon:hover {
+            color: var(--primary);
+        }
+
+        .theme-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 50%;
             width: 36px;
             height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .suggestion-info {
-            flex: 1;
-        }
-
-        .suggestion-username {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .suggestion-bio {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .follow-btn {
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 1.2rem;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            background: var(--primary);
+            color: #fff;
         }
 
         /* Mobile Navigation */
@@ -626,6 +567,7 @@
             color: var(--text-secondary);
             text-decoration: none;
             font-size: 10px;
+            transition: var(--transition);
         }
 
         .mobile-nav-link.active {
@@ -636,6 +578,30 @@
             font-size: 20px;
         }
 
+        .mobile-nav-link:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* AI Button */
+        .ai-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px 0;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .ai-button:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .app {
@@ -644,12 +610,13 @@
             .nav-sidebar {
                 transform: translateX(-100%);
             }
-            .right-sidebar {
-                transform: translateX(100%);
-            }
             .main-content {
                 margin-left: 0;
                 grid-column: 1;
+                padding: 80px 20px 80px 20px;
+            }
+            .mobile-header {
+                display: flex;
             }
             .mobile-nav {
                 display: block;
@@ -658,13 +625,16 @@
 
         @media (max-width: 768px) {
             .main-content {
-                padding: 16px;
+                padding: 70px 16px 70px 16px;
             }
             .post-actions-bar {
                 padding: 12px 16px;
             }
             .create-post {
                 padding: 16px;
+            }
+            .search-container {
+                padding: 12px;
             }
         }
 
@@ -700,154 +670,87 @@
         .theme-toggle:hover {
             transform: scale(1.1);
         }
-        .ai-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 20px;
-    text-decoration: none;
-    display: inline-block;
-    margin: 5px 0;
-    font-weight: bold;
-}
 
-.ai-button:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-  /* Hide header by default (desktop) */
-.mobile-header {
-  display: none;
-}
+        /* Navigation Sections */
+        .navigation, .profile-section, .auth-section {
+            margin-bottom: 20px;
+        }
 
-/* Show header and position elements in mobile view */
-/* --- TOP BAR --- */
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: var(--background);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 1000;
-  box-shadow: var(--shadow);
-}
-
-.topbar-left .logo {
-  font-size: 1.3rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.chat-icon {
-  color: var(--text-primary);
-  font-size: 1.5rem;
-  position: relative;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.chat-icon:hover {
-  color: var(--primary);
-}
-
-.theme-btn {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text-primary);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.theme-btn:hover {
-  background: var(--primary);
-  color: #fff;
-}
-
-/* Adjust layout so topbar doesn’t cover content */
-body {
-  padding-top: 70px;
-}
-
-
+        .section-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 16px 0 8px 12px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body data-theme="light">
-  <header class="topbar">
-  <div class="topbar-left">
-    <div class="logo">SocialSphere</div>
-  </div>
-
-  <div class="topbar-right">
-    <a href="/chat" class="chat-icon">
-      <i class="fas fa-envelope"></i>
-    </a>
-    <button id="theme-toggle" class="theme-btn">🌙</button>
-  </div>
-</header>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="mobile-left">
+            <div class="logo">SocialSphere</div>
+        </div>
+        <div class="mobile-right">
+            <a href="/chat" class="chat-icon">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <button id="mobile-theme-toggle" class="theme-btn">🌙</button>
+        </div>
+    </header>
 
     <div class="app">
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
             <div class="logo">SocialSphere</div>
-            <!-- Main Navigation -->
-<div class="navigation">
-    <a href="/home" class="nav-link ai-button">Home</a>
-    <a href="/feed" class="nav-link ai-button">Feed</a>
-    <a href="/explore" class="nav-link ai-button">Explore</a>
-    <a href="/chat" class="nav-link ai-button">Messages</a>
-    <!-- AI Button added below Messages -->
-    <a href="/AI-home" class="nav-item ai-button">🤖 AI Assistant</a>
-    <a href="/notifications" class="nav-link ai-button">Notifications</a>
-    <a href="/create" class="nav-link ai-button">Create</a>
-</div>
+            
+            <div class="section-title">Main Navigation</div>
+            <div class="navigation">
+                <a href="/home" class="nav-link ai-button">Home</a>
+                <a href="/feed" class="nav-link ai-button">Feed</a>
+                <a href="/explore" class="nav-link ai-button">Explore</a>
+                <a href="/chat" class="nav-link ai-button">Messages</a>
+                <a href="/AI-home" class="nav-link ai-button">🤖 AI Assistant</a>
+                <a href="/notifications" class="nav-link ai-button">Notifications</a>
+                <a href="/create" class="nav-link ai-button">Create</a>
+            </div>
 
-<!-- Profile & Settings -->
-<div class="profile-section">
-    <a href="/me" class="nav-link ai-button">My Profile</a>
-    <a href="/settings" class="nav-link ai-button" onclick="settings()">Settings</a>
-</div>
+            <div class="section-title">Profile & Settings</div>
+            <div class="profile-section">
+                <a href="/me" class="nav-link ai-button">My Profile</a>
+                <a href="/settings" class="nav-link ai-button">Settings</a>
+            </div>
 
-<!-- Games Section -->
-<a href="/game" class="nav-link ai-button">
-    <i class="fas fa-gamepad"></i> Tic Tac Toe
-</a>
-<a href="/perenoid" class="nav-link ai-button">
-    <i class="fas fa-user-secret"></i> Perenoid
-</a>
+            <div class="section-title">My Tools</div>
+            <a href="/game" class="nav-link ai-button">
+                <i class="fas fa-gamepad"></i> Tic Tac Toe
+            </a>
+            <a href="/perenoid" class="nav-link ai-button">
+                <i class="fas fa-user-secret"></i> Perenoid
+            </a>
 
-
-<!-- Auth Section -->
-<div class="auth-section">
-    {% if session.user %}
-        <a href="/logout" class="nav-link ai-button">Logout</a>
-    {% else %}
-        <a href="/signin" class="nav-link ai-button">Sign In</a>
-        <a href="/signup" class="nav-link ai-button">Sign Up</a>
-    {% endif %}
-</div>
+            <div class="section-title">Account</div>
+            <div class="auth-section">
+                {% if session.user %}
+                    <a href="/logout" class="nav-link ai-button">Logout</a>
+                {% else %}
+                    <a href="/signin" class="nav-link ai-button">Sign In</a>
+                    <a href="/signup" class="nav-link ai-button">Sign Up</a>
+                {% endif %}
+            </div>
         </nav>
 
-        <!-- Main Content -->
+        <!-- Main Content - Centered -->
         <main class="main-content">
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search SocialSphere...">
+                </div>
+            </div>
+
             <!-- Stories -->
             <div class="stories-container">
                 <div class="stories">
@@ -985,39 +888,24 @@ body {
             </div>
         </main>
 
-        <!-- Right sidebar removed; profile card and suggestions moved to separate profile page -->
-
         <!-- Mobile Navigation -->
-         <header class="mobile-header">
-  <div class="mobile-left">
-    <div class="logo">SocialSphere</div>
-  </div>
-
-  <div class="mobile-right">
-    <a href="/chat" class="chat-icon">
-      <i class="fas fa-envelope"></i>
-    </a>
-    <button id="theme-toggle" class="theme-btn">🌙</button>
-  </div>
-</header>
-
         <nav class="mobile-nav">
             <div class="mobile-nav-links">
-                <a href="#" class="mobile-nav-link active">
+                <a href="/home" class="mobile-nav-link active">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#" class="mobile-nav-link">
+                <a href="/explore" class="mobile-nav-link">
                     <i class="fas fa-search"></i>
                     <span>Search</span>
                 </a>
-                <a href="#" class="mobile-nav-link">
-                    <i class="fas fa-plus-square"></i>
-                    <span>Create</span>
+                <a href="/AI-home" class="mobile-nav-link">
+                    <i class="fas fa-robot"></i>
+                    <span>AI</span>
                 </a>
-                <a href="#" class="mobile-nav-link">
-                    <i class="fas fa-heart"></i>
-                    <span>Activity</span>
+                <a href="/game" class="mobile-nav-link">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Games</span>
                 </a>
                 <a href="/me" class="mobile-nav-link">
                     <i class="fas fa-user"></i>
@@ -1033,17 +921,22 @@ body {
     </div>
 
     <script>
-      
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
         const app = document.querySelector('.app');
         
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = app.getAttribute('data-theme');
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            app.setAttribute('data-theme', newTheme);
-            themeToggle.innerHTML = newTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-        });
+            document.body.setAttribute('data-theme', newTheme);
+            const icon = newTheme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            themeToggle.innerHTML = icon;
+            mobileThemeToggle.innerHTML = newTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', toggleTheme);
 
         // Like functionality
         document.querySelectorAll('.post-action-btn .fa-heart').forEach(heart => {
@@ -1059,9 +952,22 @@ body {
         document.querySelectorAll('.mobile-nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
+                const href = this.getAttribute('href');
                 document.querySelectorAll('.mobile-nav-link').forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
+                // In a real app, you would navigate to the href
+                console.log('Navigating to:', href);
             });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-bar input');
+        searchInput.addEventListener('focus', function() {
+            this.parentElement.style.boxShadow = '0 0 0 3px rgba(236, 72, 153, 0.2)';
+        });
+
+        searchInput.addEventListener('blur', function() {
+            this.parentElement.style.boxShadow = 'none';
         });
 
         // Simulate loading new posts
