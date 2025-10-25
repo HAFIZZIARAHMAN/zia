@@ -21,6 +21,82 @@ from flask_socketio import SocketIO, emit, join_room
 from flask import request, make_response
 from bs4 import BeautifulSoup
 import html
+import os
+import sqlite3
+import atexit
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "data.db")
+def init_database():
+    """Initialize database with proper error handling"""
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            # Try to connect and create tables
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            
+            # Create tables
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    email TEXT UNIQUE,
+                    password TEXT,
+                    username TEXT,
+                    avatar_url TEXT
+                )
+            ''')
+            
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS followers (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    follower_email TEXT,
+                    followed_email TEXT,
+                    UNIQUE(follower_email, followed_email)
+                )
+            ''')
+            
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS posts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_email TEXT,
+                    content TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS invites (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    sender TEXT,
+                    receiver TEXT,
+                    type TEXT
+                )
+            ''')
+            
+            conn.commit()
+            conn.close()
+            print("Database initialized successfully")
+            return
+            
+        except sqlite3.DatabaseError as e:
+            print(f"Database error (attempt {attempt + 1}): {e}")
+            if attempt < max_retries - 1:
+                # Wait and try again
+                time.sleep(1)
+            else:
+                # Final attempt failed, try to delete and recreate
+                try:
+                    if os.path.exists(DB_PATH):
+                        os.remove(DB_PATH)
+                        print("Removed corrupted database file")
+                except Exception as delete_error:
+                    print(f"Could not delete database file: {delete_error}")
+                    # Continue anyway to try creating new database
+
+# Initialize database at startup
+init_database()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "mysecretkey"
@@ -73,46 +149,7 @@ conn = sqlite3.connect(DB_PATH)
 
 # ---------- DB Setup ----------
 # ---------- Update DB Structure ----------
-def update_db_structure():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
 
-    # Users table already exists
-    c.execute("PRAGMA table_info(users)")
-    cols = [col[1] for col in c.fetchall()]
-    if "username" not in cols:
-        c.execute("ALTER TABLE users ADD COLUMN username TEXT")
-    if "avatar_url" not in cols:
-        c.execute("ALTER TABLE users ADD COLUMN avatar_url TEXT")
-    
-    # Followers table
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS followers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            follower_email TEXT,
-            followed_email TEXT,
-            UNIQUE(follower_email, followed_email)
-        )
-    """)
-
-    # Posts table
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_email TEXT,
-            content TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
-# Ensure database has needed tables/columns (run once at startup)
-try:
-    update_db_structure()
-except Exception:
-    app.logger.exception('Failed to run update_db_structure')
 
 @app.route("/follow/<username>")
 def follow_user(username):
@@ -907,13 +944,7 @@ CREATE TABLE IF NOT EXISTS users (
 )
 ''')
 
-# Insert test user
-try:
-    c.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", ('Demo User', 'demo@example.com', 'password123'))
-    conn.commit()
-    print('Test user created: demo@example.com / password123')
-except Exception as e:
-    print('Could not create test user (maybe already exists):', e)
+
 
 conn.close()
 
@@ -945,12 +976,22 @@ def users():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect("data.db")
-    c = conn.cursor()
-    c.execute("SELECT id, name, email, password FROM users")  # Correct column name
-    all_users = c.fetchall()
-    conn.close()
-    return render_template("users.html", users=all_users)
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("SELECT id, name, email, password FROM users")
+        all_users = c.fetchall()
+        conn.close()
+        return render_template("users.html", users=all_users)
+    
+    except sqlite3.DatabaseError as e:
+        # Database is corrupted, recreate it
+        print(f"Database corrupted, recreating: {e}")
+        init_database()
+        return redirect(url_for("users"))  # Redirect to try again
+    
+    except Exception as e:
+        return f"<h3>Error: {e}</h3><p><a href='/login'>Back to Admin</a></p>"
 
 
 # ---------- /submit Route ----------
@@ -1546,6 +1587,25 @@ def game():
 
 
 
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            email TEXT UNIQUE,
+            password TEXT,
+            username TEXT,
+            avatar_url TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+    print("✅ Database initialized successfully")
+
+# Run DB init when app starts
+init_db()
 
 
 # ---------- Run ----------

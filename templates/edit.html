@@ -342,7 +342,7 @@
                 Edit User
             </h1>
 
-            <form method="POST" class="form" action="#">
+            <form method="POST" class="form" action="/edit/{{ user[0] if user else '' }}">
                 <label class="field">
                     <span class="field-label">
                         <i class="fas fa-user"></i>
@@ -364,6 +364,17 @@
                         <input class="input" type="email" name="email" value="enter your email" required>
                     </div>
                 </label>
+                <!-- Add this after the email field in edit.html -->
+<label class="field">
+    <span class="field-label">
+        <i class="fas fa-lock"></i>
+        Password
+    </span>
+    <div class="input-icon">
+        <i class="fas fa-lock"></i>
+        <input class="input" type="password" name="password" placeholder="Enter new password" value="{{ user[3] if user else '' }}">
+    </div>
+</label>
 
                 <div class="form-row">
                     <button class="btn primary" type="submit">

@@ -180,6 +180,19 @@
             box-shadow: var(--shadow-lg);
         }
 
+        .btn-admin {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: var(--shadow);
+            margin-top: 10px;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
         .divider {
             text-align: center;
             color: var(--text-secondary);
@@ -316,8 +329,14 @@
                     <input class="input" type="password" name="password" placeholder="Enter your password" required>
                 </div>
 
-                <button class="btn btn-primary" type="submit" onclick="signin()">
+                <button class="btn btn-primary" type="submit">
                     Sign In to SocialSphere
+                </button>
+
+                <!-- Admin Button -->
+                <button class="btn btn-admin" type="button" onclick="goToAdmin()">
+                    <i class="fas fa-cog"></i>
+                    Admin Panel
                 </button>
             </form>
 
@@ -346,6 +365,11 @@
     <script>
         function signin() {
             window.location.href = "home.html";
+        }
+
+        function goToAdmin() {
+            // Redirect to admin login page
+            window.location.href = "/login";
         }
 
         function setLanguage(lang) {
