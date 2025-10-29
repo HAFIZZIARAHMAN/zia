@@ -3,39 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SocialSphere - Your Social World</title>
+    <title>SocialSphere - Your Beautiful Social World</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #ec4899;
-            --primary-dark: #db2777;
-            --secondary: #8b5cf6;
-            --accent: #06b6d4;
-            --background: #ffffff;
+            --primary: #7c3aed;
+            --primary-light: #8b5cf6;
+            --primary-dark: #6d28d9;
+            --secondary: #06b6d4;
+            --secondary-light: #22d3ee;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --background: #f8fafc;
             --surface: #ffffff;
             --card: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            --border: #e5e7eb;
-            --border-light: #f3f4f6;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --radius: 16px;
-            --radius-sm: 8px;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            --radius: 20px;
+            --radius-sm: 12px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient-primary: linear-gradient(135deg, var(--primary), var(--secondary));
+            --gradient-accent: linear-gradient(135deg, var(--accent), var(--primary-light));
         }
 
         [data-theme="dark"] {
-            --background: #0f0f0f;
-            --surface: #1a1a1a;
-            --card: #262626;
-            --text-primary: #f8fafc;
-            --text-secondary: #e2e8f0;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
             --text-muted: #94a3b8;
-            --border: #374151;
-            --border-light: #2d3748;
+            --border: #475569;
+            --border-light: #334155;
         }
 
         * {
@@ -80,30 +85,22 @@
         .logo {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 32px;
             padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .nav-link {
-            display: block;
-            padding: 12px 18px;
-            margin: 4px 0;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            color: var(--text-primary);
-            transition: var(--transition);
-            background: var(--card);
-            border: 1px solid var(--border-light);
-        }
-
-        .nav-link:hover {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+        .logo i {
+            font-size: 24px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .nav-links {
@@ -124,15 +121,19 @@
             font-weight: 500;
             transition: var(--transition);
             position: relative;
+            background: var(--card);
+            border: 1px solid var(--border-light);
         }
 
         .nav-link:hover {
-            background: var(--border-light);
+            background: var(--gradient-primary);
+            color: white;
             transform: translateX(4px);
+            box-shadow: var(--shadow-md);
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             color: white;
             box-shadow: var(--shadow-md);
         }
@@ -161,6 +162,7 @@
             margin-bottom: 24px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
+            position: relative;
         }
 
         .search-bar {
@@ -176,7 +178,7 @@
 
         .search-bar:focus-within {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
 
         .search-bar i {
@@ -193,6 +195,138 @@
         }
 
         .search-bar input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 16px;
+            right: 16px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            border: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+        }
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-right: 16px;
+        }
+
+        .search-result-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+        }
+
+        .follow-btn {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .chat-btn {
+            background: var(--background);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .welcome-message {
+            position: fixed;
+            top: 0;
+            left: 280px;
+            right: 0;
+            background: var(--surface);
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 30;
+        }
+
+        .welcome-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .welcome-text {
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 1200px) {
+            .welcome-message {
+                left: 0;
+                padding-left: 16px;
+            }
+        }
+
+        .search-result-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border);
+        }
+
+        .search-result-item .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-result-item .username {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .search-result-item .name {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            padding: 16px;
+            text-align: center;
             color: var(--text-muted);
         }
 
@@ -225,7 +359,7 @@
             width: 66px;
             height: 66px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: var(--gradient-primary);
             padding: 3px;
             position: relative;
         }
@@ -280,7 +414,7 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -303,7 +437,7 @@
         .post-input input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
 
         .post-actions {
@@ -360,7 +494,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -487,7 +621,7 @@
             left: 0;
             right: 0;
             height: 60px;
-            background: var(--background);
+            background: var(--surface);
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -500,7 +634,7 @@
         .mobile-left .logo {
             font-size: 1.3rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             color: transparent;
         }
@@ -585,7 +719,7 @@
 
         /* AI Button */
         .ai-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--gradient-primary);
             color: white;
             padding: 10px 15px;
             border-radius: 20px;
@@ -594,12 +728,16 @@
             margin: 5px 0;
             font-weight: bold;
             transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
         }
 
         .ai-button:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            background: var(--gradient-accent);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-md);
         }
 
         /* Responsive */
@@ -636,6 +774,72 @@
             .search-container {
                 padding: 12px;
             }
+        }
+
+        /* Success Toast */
+        .success-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success, #10b981);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-out 2.7s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Follow Button States */
+        .following-btn {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .following-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error, #ef4444);
+            border-color: var(--error, #ef4444);
+        }
+
+        .following-btn:hover i {
+            color: var(--error, #ef4444);
+        }
+
+        .following-btn:hover::after {
+            content: 'Unfollow';
+        }
+
+        .following-btn:hover i::before {
+            content: "\\f235";  /* fa-user-times */
+        }
+
+        .follow-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         /* Animations */
@@ -684,6 +888,31 @@
             margin: 16px 0 8px 12px;
             font-weight: 600;
         }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            background: var(--gradient-accent);
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -693,51 +922,87 @@
             <div class="logo">SocialSphere</div>
         </div>
         <div class="mobile-right">
-            <a href="/chat" class="chat-icon">
-                <i class="fas fa-envelope"></i>
-            </a>
-            <button id="mobile-theme-toggle" class="theme-btn">🌙</button>
+            <div class="welcome-message">
+                <div class="welcome-avatar">{{ avatar_text }}</div>
+                <div class="welcome-text">Welcome back, {{ username }}!</div>
+                <a href="/chitchat" class="chat-icon">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <button id="mobile-theme-toggle" class="theme-btn">🌙</button>
+            </div>
         </div>
     </header>
+
 
     <div class="app">
         <!-- Navigation Sidebar -->
         <nav class="nav-sidebar">
-            <div class="logo">SocialSphere</div>
+            <div class="logo"><i class="fas fa-globe-americas"></i> SocialSphere</div>
             
             <div class="section-title">Main Navigation</div>
             <div class="navigation">
-                <a href="/home" class="nav-link ai-button">Home</a>
-                <a href="/feed" class="nav-link ai-button">Feed</a>
-                <a href="/explore" class="nav-link ai-button">Explore</a>
-                <a href="/chat" class="nav-link ai-button">Messages</a>
-                <a href="/AI-home" class="nav-link ai-button">🤖 AI Assistant</a>
-                <a href="/notifications" class="nav-link ai-button">Notifications</a>
-                <a href="/create" class="nav-link ai-button">Create</a>
+                <a href="/home" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/feed" class="nav-link">
+                    <i class="fas fa-stream"></i>
+                    <span>Feed</span>
+                </a>
+                <a href="/explore" class="nav-link">
+                    <i class="fas fa-compass"></i>
+                    <span>Explore</span>
+                </a>
+                <a href="/chitchat" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messages</span>
+                </a>
+                <a href="/AI-home" class="nav-link">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </a>
+                <a href="/notifications" class="nav-link">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                <a href="/create" class="nav-link">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create</span>
+                </a>
             </div>
 
             <div class="section-title">Profile & Settings</div>
             <div class="profile-section">
-                <a href="/me" class="nav-link ai-button">My Profile</a>
-                <a href="/settings" class="nav-link ai-button">Settings</a>
+                <a href="/me" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="/settings" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
             </div>
 
             <div class="section-title">My Tools</div>
-            <a href="/game" class="nav-link ai-button">
-                <i class="fas fa-gamepad"></i> Tic Tac Toe
+            <a href="/game" class="nav-link">
+                <i class="fas fa-gamepad"></i>
+                <span>Tic Tac Toe</span>
             </a>
-            <a href="/perenoid" class="nav-link ai-button">
-                <i class="fas fa-user-secret"></i> Perenoid
+            <a href="/perenoid" class="nav-link">
+                <i class="fas fa-user-secret"></i>
+                <span>Perenoid</span>
             </a>
 
             <div class="section-title">Account</div>
             <div class="auth-section">
-                {% if session.user %}
-                    <a href="/logout" class="nav-link ai-button">Logout</a>
-                {% else %}
-                    <a href="/signin" class="nav-link ai-button">Sign In</a>
-                    <a href="/signup" class="nav-link ai-button">Sign Up</a>
-                {% endif %}
+                <a href="/login" class="nav-link">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Sign In</span>
+                </a>
+                <a href="/signup" class="nav-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Sign Up</span>
+                </a>
             </div>
         </nav>
 
@@ -747,8 +1012,10 @@
             <div class="search-container">
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search SocialSphere...">
+                    <input type="text" id="searchInput" placeholder="Search SocialSphere..." 
+                           onkeyup="searchUsers(this.value)">
                 </div>
+                <div id="searchResults" class="search-results"></div>
             </div>
 
             <!-- Stories -->
@@ -764,35 +1031,51 @@
                         <div class="story-username">Your Story</div>
                     </div>
                     
-                    <!-- Stories from DB users -->
-                    {% for u in stories %}
+                    <!-- Sample Stories -->
                     <div class="story">
                         <div class="story-avatar">
-                            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(45deg, #a18cd1, #fbc2eb); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">{{ (u.username or u.name or u.email)[0:1]|upper }}</div>
+                            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(45deg, #a78bfa, #c4b5fd); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">S</div>
                         </div>
-                        <div class="story-username">{{ u.username or u.name }}</div>
+                        <div class="story-username">Sarah</div>
                     </div>
-                    {% endfor %}
+                    <div class="story">
+                        <div class="story-avatar">
+                            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(45deg, #fbbf24, #fcd34d); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">A</div>
+                        </div>
+                        <div class="story-username">Alex</div>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(45deg, #34d399, #6ee7b7); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">M</div>
+                        </div>
+                        <div class="story-username">Mike</div>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <div style="width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(45deg, #f87171, #fca5a5); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">J</div>
+                        </div>
+                        <div class="story-username">Jenny</div>
+                    </div>
                 </div>
             </div>
 
             <!-- Create Post -->
             <div class="create-post">
                 <div class="post-input">
-                    <div class="avatar">{{ avatar_text }}</div>
-                    <input type="text" placeholder="What's on your mind, {{ username }}?">
+                    <div class="avatar">U</div>
+                    <input type="text" placeholder="What's on your mind?">
                 </div>
                 <div class="post-actions">
                     <div class="post-action">
-                        <i class="fas fa-image" style="color: #45bd62;"></i>
+                        <i class="fas fa-image" style="color: #10b981;"></i>
                         <span>Photo</span>
                     </div>
                     <div class="post-action">
-                        <i class="fas fa-video" style="color: #f5533d;"></i>
+                        <i class="fas fa-video" style="color: #ef4444;"></i>
                         <span>Video</span>
                     </div>
                     <div class="post-action">
-                        <i class="fas fa-smile" style="color: #f7b928;"></i>
+                        <i class="fas fa-smile" style="color: #f59e0b;"></i>
                         <span>Feeling</span>
                     </div>
                 </div>
@@ -803,7 +1086,7 @@
                 <!-- Sample Post 1 -->
                 <div class="post">
                     <div class="post-header">
-                        <div class="post-avatar" style="background: linear-gradient(45deg, #ff6b6b, #ffa726);">S</div>
+                        <div class="post-avatar" style="background: linear-gradient(45deg, #a78bfa, #c4b5fd);">S</div>
                         <div class="post-user">
                             <div class="post-username">sarah_m</div>
                             <div class="post-time">2 hours ago · <i class="fas fa-globe-americas"></i></div>
@@ -840,7 +1123,7 @@
                     </div>
                     <div class="post-comments">
                         <div class="add-comment">
-                            <div class="post-avatar" style="width: 32px; height: 32px; font-size: 14px;">{{ avatar_text }}</div>
+                            <div class="post-avatar" style="width: 32px; height: 32px; font-size: 14px;">U</div>
                             <input type="text" placeholder="Add a comment...">
                         </div>
                     </div>
@@ -849,7 +1132,7 @@
                 <!-- Sample Post 2 -->
                 <div class="post">
                     <div class="post-header">
-                        <div class="post-avatar" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">A</div>
+                        <div class="post-avatar" style="background: linear-gradient(45deg, #34d399, #6ee7b7);">A</div>
                         <div class="post-user">
                             <div class="post-username">alex_j</div>
                             <div class="post-time">5 hours ago · <i class="fas fa-globe-americas"></i></div>
@@ -914,6 +1197,11 @@
             </div>
         </nav>
 
+        <!-- Floating Action Button -->
+        <div class="fab">
+            <i class="fas fa-plus"></i>
+        </div>
+
         <!-- Theme Toggle -->
         <div class="theme-toggle" id="themeToggle">
             <i class="fas fa-moon"></i>
@@ -924,7 +1212,6 @@
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
         const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
-        const app = document.querySelector('.app');
         
         function toggleTheme() {
             const currentTheme = document.body.getAttribute('data-theme');
@@ -961,14 +1248,294 @@
         });
 
         // Search functionality
-        const searchInput = document.querySelector('.search-bar input');
-        searchInput.addEventListener('focus', function() {
-            this.parentElement.style.boxShadow = '0 0 0 3px rgba(236, 72, 153, 0.2)';
-        });
+        let searchTimeout;
 
-        searchInput.addEventListener('blur', function() {
-            this.parentElement.style.boxShadow = 'none';
-        });
+        async function searchUsers(query) {
+            if (query.length < 2) {
+                document.getElementById('searchResults').style.display = 'none';
+                return;
+            }
+
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            // Show loading state
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '<div class="loading">Searching...</div>';
+            resultsContainer.style.display = 'block';
+
+            // Get current user email from the session
+            const currentUserEmail = "{{ session.get('user_email', '') }}";
+
+            // Debounce search requests
+            searchTimeout = setTimeout(async () => {
+                try {
+                    // Call the backend search API
+                    const response = await fetch(`/search_users?q=${encodeURIComponent(query)}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const users = await response.json();
+                    
+                    // If no users found
+                    if (users.length === 0) {
+                        resultsContainer.innerHTML = '<div class="loading">No users found</div>';
+                        return;
+                    }
+                    
+                    // For each user, check if current user is following them
+                    const transformedUsers = await Promise.all(users.map(async (user) => {
+                        try {
+                            // Check if following status
+                            const response = await fetch(`/api/followers/${user.username}`);
+                            const data = await response.json();
+                            const isFollowing = Array.isArray(data.followers) && data.followers.includes(currentUserEmail);
+                            
+                            const displayName = user.name || user.username || user.email;
+                            return {
+                                id: user.email,
+                                username: user.username || user.email.split('@')[0],
+                                name: displayName,
+                                initial: displayName[0].toUpperCase(),
+                                color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+                                isFollowing: isFollowing
+                            };
+                        } catch (error) {
+                            console.error('Error checking follow status:', error);
+                            return null;
+                        }
+                    }));
+                    
+                    // Filter out any failed user checks
+                    const validUsers = transformedUsers.filter(user => user !== null);
+                    
+                    displaySearchResults(validUsers);
+                } catch (error) {
+                    console.error('Search error:', error);
+                    resultsContainer.innerHTML = '<div class="loading">Error loading results</div>';
+                }
+            }, 300);
+        }
+
+        function displaySearchResults(users) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (users.length === 0) {
+                resultsContainer.innerHTML = '<div class="loading">No users found</div>';
+                return;
+            }
+
+            const currentUserEmail = "{{ session.get('user_email', '') }}";
+            resultsContainer.innerHTML = users.map(user => `
+                <div class="search-result-item">
+                    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                        <a href="/profile/${user.username}" style="text-decoration: none;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${user.color}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">${user.initial}</div>
+                        </a>
+                        <a href="/profile/${user.username}" class="user-info" style="text-decoration: none;">
+                            <div class="username">${user.username}</div>
+                            <div class="name">${user.name}</div>
+                        </a>
+                    </div>
+                    <div class="search-result-actions">
+                        ${user.id !== currentUserEmail ? `
+                            <button onclick="toggleFollow('${user.username}', '${currentUserEmail}', ${user.isFollowing})" 
+                                    class="action-btn ${user.isFollowing ? 'following-btn' : 'follow-btn'}"
+                                    data-username="${user.username}">
+                                <i class="fas fa-${user.isFollowing ? 'user-check' : 'user-plus'}"></i>
+                                ${user.isFollowing ? 'Following' : 'Follow'}
+                            </button>
+                            <button onclick="startChat('${user.username}')" class="action-btn chat-btn">
+                                <i class="fas fa-comment"></i> Chat
+                            </button>
+                        ` : '<span class="muted">This is you</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectUser(userId) {
+            // Handle user selection
+            console.log('Selected user:', userId);
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('searchInput').value = '';
+            // In a real app, you would navigate to the user's profile
+            alert(`Navigating to user ${userId}`);
+        }
+
+        // Sample data for demo purposes
+        function getSampleUsers(query) {
+            const sampleUsers = [
+                { id: '1', username: 'sarah_m', name: 'Sarah Johnson', initial: 'S', color: 'linear-gradient(45deg, #a78bfa, #c4b5fd)' },
+                { id: '2', username: 'alex_j', name: 'Alex Thompson', initial: 'A', color: 'linear-gradient(45deg, #34d399, #6ee7b7)' },
+                { id: '3', username: 'mike_r', name: 'Mike Rodriguez', initial: 'M', color: 'linear-gradient(45deg, #fbbf24, #fcd34d)' },
+                { id: '4', username: 'jenny_w', name: 'Jenny Wilson', initial: 'J', color: 'linear-gradient(45deg, #f87171, #fca5a5)' },
+                { id: '5', username: 'david_k', name: 'David Kim', initial: 'D', color: 'linear-gradient(45deg, #60a5fa, #93c5fd)' }
+            ];
+            
+            return sampleUsers.filter(user => 
+                user.username.toLowerCase().includes(query.toLowerCase()) || 
+                user.name.toLowerCase().includes(query.toLowerCase())
+            );
+        }
+
+        async function updateFollowButton(username, isFollowing) {
+            const buttons = document.querySelectorAll(`button[data-username="${username}"]`);
+            buttons.forEach(btn => {
+                btn.innerHTML = `<i class="fas fa-${isFollowing ? 'user-check' : 'user-plus'}"></i> ${isFollowing ? 'Following' : 'Follow'}`;
+                btn.className = `action-btn ${isFollowing ? 'following-btn' : 'follow-btn'}`;
+                btn.onclick = (e) => { 
+                    e.preventDefault(); 
+                    (isFollowing ? unfollowUser : followUser)(username, currentUserEmail);
+                };
+            });
+        }
+
+        async function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}-toast`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function followUser(username, currentUserEmail) {
+            if (!currentUserEmail) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            if (username === currentUserEmail) {
+                showToast("You cannot follow yourself", "error");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/follow/${username}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    await updateFollowButton(username, true);
+                    await updateFollowerCounts(username, data.followers_count);
+                    showToast(data.message);
+                } else {
+                    throw new Error(data.error || "Error following user");
+                }
+            } catch (error) {
+                console.error('Error following user:', error);
+                showToast(error.message || "Error following user", "error");
+            }
+        }
+
+        async function unfollowUser(username, currentUserEmail) {
+            if (!currentUserEmail) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/unfollow/${username}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    await updateFollowButton(username, false);
+                    await updateFollowerCounts(username, data.followers_count);
+                    showToast(data.message);
+                } else {
+                    throw new Error(data.error || "Error unfollowing user");
+                }
+            } catch (error) {
+                console.error('Error unfollowing user:', error);
+                showToast(error.message || "Error unfollowing user", "error");
+            }
+        }
+
+        async function toggleFollow(username, currentUserEmail, isCurrentlyFollowing) {
+            if (!currentUserEmail) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            if (username === currentUserEmail) {
+                showToast("You cannot follow/unfollow yourself", "error");
+                return;
+            }
+
+            try {
+                const endpoint = isCurrentlyFollowing ? '/api/unfollow/' : '/api/follow/';
+                console.log('Making request to:', endpoint + username);
+                
+                const response = await fetch(endpoint + username, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include' // Include cookies for cross-origin requests
+                });
+                
+                if (!response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update button state
+                    const buttons = document.querySelectorAll(`button[data-username="${username}"]`);
+                    buttons.forEach(btn => {
+                        const newIsFollowing = !isCurrentlyFollowing;
+                        btn.className = `action-btn ${newIsFollowing ? 'following-btn' : 'follow-btn'}`;
+                        btn.innerHTML = `<i class="fas fa-${newIsFollowing ? 'user-check' : 'user-plus'}"></i> ${newIsFollowing ? 'Following' : 'Follow'}`;
+                        // Update the onclick handler with the new state
+                        btn.onclick = (e) => {
+                            e.preventDefault();
+                            toggleFollow(username, currentUserEmail, newIsFollowing);
+                        };
+                    });
+                    
+                    // Update follower count if present
+                    if (data.followers_count !== undefined) {
+                        updateFollowerCounts(username, data.followers_count);
+                    }
+                    showToast(data.message || (isCurrentlyFollowing ? "Successfully unfollowed" : "Successfully followed"));
+                    
+                    // Refresh search results to update all instances
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput && searchInput.value.length >= 2) {
+                        await searchUsers(searchInput.value);
+                    }
+                } else {
+                    throw new Error(data.error || "Error updating follow status");
+                }
+            } catch (error) {
+                console.error('Error toggling follow:', error);
+                showToast(error.message || "Error updating follow status", "error");
+            }
+        }
+
+        async function updateFollowerCounts(username, count) {
+            const countElements = document.querySelectorAll(`[data-follower-count="${username}"]`);
+            countElements.forEach(elem => elem.textContent = count);
+        }
+
+        function startChat(username) {
+            window.location.href = `/chat?user=${username}`;
+        }
 
         // Simulate loading new posts
         setTimeout(() => {
@@ -977,7 +1544,7 @@
             newPost.className = 'post';
             newPost.innerHTML = `
                 <div class="post-header">
-                    <div class="post-avatar" style="background: linear-gradient(45deg, #a18cd1, #fbc2eb);">L</div>
+                    <div class="post-avatar" style="background: linear-gradient(45deg, #60a5fa, #93c5fd);">L</div>
                     <div class="post-user">
                         <div class="post-username">lisa_k</div>
                         <div class="post-time">Just now · <i class="fas fa-globe-americas"></i></div>

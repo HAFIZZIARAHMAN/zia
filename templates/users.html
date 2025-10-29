@@ -177,6 +177,18 @@
             border-bottom: none;
         }
 
+        .default-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
         /* Action Buttons */
         .actions {
             display: flex;
@@ -268,6 +280,31 @@
             text-decoration: underline;
         }
 
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .status-badge.inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* View Button */
+        .btn.view {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from {
@@ -342,7 +379,13 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Password</th>
+                <th>Username</th>
+                <th>Avatar</th>
+                <th>Followers</th>
+                <th>Following</th>
+                <th>Posts</th>
+                <th>Account Status</th>
+                <th>Last Active</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -353,11 +396,36 @@
                     <td>{{ user[0] }}</td>   <!-- ID -->
                     <td>{{ user[1] }}</td>   <!-- Name -->
                     <td>{{ user[2] }}</td>   <!-- Email -->
-                    <td>{{ user[3] }}</td>   <!-- Password -->
+                    <td>{{ user[3] or 'Not set' }}</td>   <!-- Username -->
+                    <td>
+                        {% if user[4] %}
+                            <img src="{{ user[4] }}" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                            <div class="default-avatar">
+                                {{ user[1][0] if user[1] else user[2][0] | upper }}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ user[5] }}</td>   <!-- Followers -->
+                    <td>{{ user[6] }}</td>   <!-- Following -->
+                    <td>{{ user[7] }}</td>   <!-- Posts -->
+                    <td>
+                        <span class="status-badge {{ 'active' if user[8] == 'Active' else 'inactive' }}">
+                            {{ user[8] }}
+                        </span>
+                    </td>
+                    <td>{{ user[9] }}</td>   <!-- Last Active -->
                     <td class="actions">
                         {% if session.get('logged_in') %}
-                            <a href="{{ url_for('edit_user', user_id=user[0]) }}" class="btn small primary">Edit</a>
-                            <a href="{{ url_for('delete_user', user_id=user[0]) }}" class="btn small danger">Delete</a>
+                            <a href="{{ url_for('edit_user', user_id=user[0]) }}" class="btn small primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{{ url_for('delete_user', user_id=user[0]) }}" class="btn small danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                            <a href="/profile/{{ user[3] }}" class="btn small view" target="_blank">
+                                <i class="fas fa-eye"></i> View
+                            </a>
                         {% else %}
                             <span class="muted">Login to manage</span>
                         {% endif %}

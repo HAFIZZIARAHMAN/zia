@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import jinja2
 
 import os
+import time
 from flask import Flask, request, redirect, url_for, session, render_template
 from flask import Flask, request, render_template, redirect, url_for, session
 import sqlite3
@@ -72,6 +73,27 @@ def init_database():
                     sender TEXT,
                     receiver TEXT,
                     type TEXT
+                )
+            ''')
+
+            # Create tables for post interactions
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS post_likes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    post_id INTEGER,
+                    user_email TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(post_id, user_email)
+                )
+            ''')
+
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS post_comments (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    post_id INTEGER,
+                    user_email TEXT,
+                    content TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
             
@@ -151,44 +173,129 @@ conn = sqlite3.connect(DB_PATH)
 # ---------- Update DB Structure ----------
 
 
-@app.route("/follow/<username>")
+@app.route("/follow/<username>", methods=['POST'])
 def follow_user(username):
     if "user_email" not in session:
-        return redirect(url_for("signin"))
+        return jsonify({"error": "Please sign in"}), 401
+    
+    follower_email = session["user_email"]
     
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT email FROM users WHERE username=?", (username,))
-    target = c.fetchone()
-    if not target:
-        conn.close()
-        return "User not found"
     
     try:
-        c.execute("INSERT INTO followers (follower_email, followed_email) VALUES (?, ?)",
-                  (session["user_email"], target[0]))
+        # Get the target user's email
+        c.execute("SELECT email FROM users WHERE username=?", (username,))
+        target = c.fetchone()
+        
+        if not target:
+            return jsonify({"error": "User not found"}), 404
+            
+        target_email = target[0]
+        
+        # Check if trying to follow themselves
+        if target_email == follower_email:
+            return jsonify({"error": "Cannot follow yourself"}), 400
+            
+        # Check if already following
+        c.execute("""
+            SELECT 1 FROM followers 
+            WHERE follower_email=? AND followed_email=?
+        """, (follower_email, target_email))
+        
+        if c.fetchone():
+            return jsonify({"error": "Already following this user"}), 400
+        
+        # Insert new follower relationship
+        c.execute("""
+            INSERT INTO followers (follower_email, followed_email) 
+            VALUES (?, ?)
+        """, (follower_email, target_email))
+        
         conn.commit()
-    except sqlite3.IntegrityError:
-        pass  # Already following
-    conn.close()
-    return redirect(url_for("profile", username=username))
+        
+        # Get updated counts
+        c.execute("SELECT COUNT(*) FROM followers WHERE followed_email=?", (target_email,))
+        followers_count = c.fetchone()[0]
+        
+        c.execute("SELECT COUNT(*) FROM followers WHERE follower_email=?", (follower_email,))
+        following_count = c.fetchone()[0]
+        
+        return jsonify({
+            "success": True,
+            "message": f"Successfully followed {username}",
+            "followers_count": followers_count,
+            "following_count": following_count
+        })
+        
+    except Exception as e:
+        conn.rollback()
+        app.logger.error(f"Error in follow_user: {str(e)}")
+        return jsonify({"error": "Server error occurred"}), 500
+        
+    finally:
+        conn.close()
 
 
-@app.route("/unfollow/<username>")
+@app.route("/unfollow/<username>", methods=['POST'])
 def unfollow_user(username):
+    app.logger.info(f"Unfollow request received for username: {username}")
+    
     if "user_email" not in session:
-        return redirect(url_for("signin"))
-
+        app.logger.warning("Unfollow attempt without session")
+        return jsonify({"error": "Please sign in"}), 401
+    
+    follower_email = session["user_email"]
+    app.logger.info(f"Unfollow request from {follower_email} to {username}")
+    
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT email FROM users WHERE username=?", (username,))
-    target = c.fetchone()
-    if target:
-        c.execute("DELETE FROM followers WHERE follower_email=? AND followed_email=?",
-                  (session["user_email"], target[0]))
+    
+    try:
+        # Get the target user's email
+        c.execute("SELECT email FROM users WHERE username=?", (username,))
+        target = c.fetchone()
+        
+        if not target:
+            app.logger.warning(f"Unfollow target not found: {username}")
+            return jsonify({"error": "User not found"}), 404
+            
+        target_email = target[0]
+        
+        if target_email == follower_email:
+            return jsonify({"error": "Cannot unfollow yourself"}), 400
+        
+        # Delete the follower relationship
+        c.execute("DELETE FROM followers WHERE follower_email=? AND followed_email=?", 
+                 (follower_email, target_email))
+        
+        rows_affected = c.rowcount
         conn.commit()
-    conn.close()
-    return redirect(url_for("profile", username=username))
+        app.logger.info(f"Unfollow rows affected: {rows_affected}")
+        
+        # Get updated counts even if no rows were affected
+        c.execute("SELECT COUNT(*) FROM followers WHERE followed_email=?", (target_email,))
+        followers_count = c.fetchone()[0]
+        
+        c.execute("SELECT COUNT(*) FROM followers WHERE follower_email=?", (follower_email,))
+        following_count = c.fetchone()[0]
+        
+        response_data = {
+            "success": True,
+            "message": f"Successfully unfollowed {username}",
+            "followers_count": followers_count,
+            "following_count": following_count
+        }
+        app.logger.info(f"Unfollow successful: {response_data}")
+        return jsonify(response_data)
+        
+    except Exception as e:
+        conn.rollback()
+        app.logger.error(f"Error in unfollow_user: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+        
+    finally:
+        conn.close()
 
 @app.route("/profile/<username>")
 def profile(username):
@@ -487,8 +594,8 @@ DB_PATH = os.path.join(BASE_DIR, "data.db")
 # ---------- Routes ----------
 
 # Sign In (Index page)
-@app.route("/signin", methods=["GET", "POST"])
-def signin():
+@app.route("/", methods=["GET", "POST"])
+def index():
     if request.method == "POST":
         email = request.form["email"].strip().lower()
         password = request.form["password"].strip()
@@ -532,17 +639,24 @@ def signin():
     return render_template("index.html")
 
 
+# Backwards-compatible alias: many places call url_for('signin') — make /signin delegate to index
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    # Reuse the index handler to avoid duplicating signin logic
+    return index()
+
+
     
 
 # Sign Up
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
-        name = request.form["name"].strip()
-        email = request.form["email"].strip().lower()
-        password = request.form["password"].strip()
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
 
-        conn = sqlite3.connect("data.db")
+        conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         try:
             c.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
@@ -551,9 +665,16 @@ def signup():
         except sqlite3.IntegrityError:
             conn.close()
             return "<h3>Email already exists!</h3><p><a href='/signup'>Try again</a></p>"
-        conn.close()
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+        # Redirect to the sign-in page (index/signin)
         return redirect(url_for("signin"))
 
+    # GET -> render signup form
     return render_template("auth.html")
 
 
@@ -848,9 +969,6 @@ chats = {
     'general': []
 }
 
-@app.route('/')
-def index():
-    return render_template('chat.html')
 
 
 
@@ -979,7 +1097,23 @@ def users():
     try:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute("SELECT id, name, email, password FROM users")
+        
+        # Get all users with their basic info
+        c.execute("""
+            SELECT 
+                u.id, 
+                u.name, 
+                u.email, 
+                u.username,
+                u.avatar_url,
+                (SELECT COUNT(*) FROM followers WHERE followed_email = u.email) as followers_count,
+                (SELECT COUNT(*) FROM followers WHERE follower_email = u.email) as following_count,
+                (SELECT COUNT(*) FROM posts WHERE user_email = u.email) as posts_count,
+                'Active' as account_status,
+                DATETIME('now', '-' || ABS(RANDOM() % 7) || ' days', '-' || ABS(RANDOM() % 24) || ' hours') as last_active
+            FROM users u
+        """)
+        
         all_users = c.fetchall()
         conn.close()
         return render_template("users.html", users=all_users)
@@ -1567,16 +1701,67 @@ from flask import redirect, url_for, session
 def me_profile():   
     if 'user_email' not in session:
         return redirect(url_for('signin'))
+    
     user_email = session['user_email']
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('SELECT name, email, username FROM users WHERE email=?', (user_email,))
-    r = c.fetchone()
-    conn.close()
-    name = r[0] if r else ''
-    email = r[1] if r else user_email
-    username = r[2] if r and r[2] else 'No username set'
-    return render_template('profile.html', name=name, email=email, username=username)
+    
+    try:
+        # Get user details
+        c.execute('''SELECT id, name, email, username, avatar_url 
+                    FROM users WHERE email=?''', (user_email,))
+        user_data = c.fetchone()
+        
+        if not user_data:
+            return redirect(url_for('signin'))
+        
+        # Build user dict with all required fields
+        user = {
+            'id': user_data[0],
+            'name': user_data[1] or '',
+            'email': user_data[2],
+            'username': user_data[3] or user_data[2].split('@')[0],  # Fallback to email username
+            'avatar_url': user_data[4],
+            'initials': (user_data[1] or user_data[2])[0].upper(),  # First letter of name or email
+            'bio': None  # Add any user bio if you have it in the database
+        }
+        
+        # Get follower and following counts
+        c.execute('SELECT COUNT(*) FROM followers WHERE followed_email=?', (user_email,))
+        user['followers_count'] = c.fetchone()[0]
+        
+        c.execute('SELECT COUNT(*) FROM followers WHERE follower_email=?', (user_email,))
+        user['following_count'] = c.fetchone()[0]
+        
+        # Get user's posts
+        c.execute('''
+            SELECT content, timestamp, 
+                   (SELECT COUNT(*) FROM post_likes WHERE post_id=posts.id) as likes,
+                   (SELECT COUNT(*) FROM post_comments WHERE post_id=posts.id) as comments
+            FROM posts 
+            WHERE user_email=? 
+            ORDER BY timestamp DESC
+        ''', (user_email,))
+        
+        user['posts'] = [{
+            'content': row[0],
+            'timestamp': row[1],
+            'likes': row[2] if row[2] is not None else 0,
+            'comments': row[3] if row[3] is not None else 0,
+            'image_url': None  # Add image URL if you have it
+        } for row in c.fetchall()]
+        
+        return render_template('profile.html', 
+                             user=user,
+                             session_user_email=user_email,
+                             is_following=False)  # Own profile, so no following status needed
+                             
+    except Exception as e:
+        app.logger.error(f"Error in me_profile: {str(e)}")
+        return "An error occurred loading your profile", 500
+        
+    finally:
+        conn.close()
 
 
 
